@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Потужнометр</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1e90ff, #ff4500);
+      color: white;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #ffcc00;
+      color: black;
+      border: none;
+      padding: 15px 25px;
+      font-size: 1.2em;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #ffaa00;
+    }
+    .result {
+      margin-top: 30px;
+      font-size: 2em;
+      font-weight: bold;
+      padding: 20px;
+      border-radius: 15px;
+      background: rgba(0,0,0,0.4);
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔥 Потужнометр 🔥</h1>
+  <p>Натисни кнопку та дізнайся свою потужність!</p>
+  <button onclick="measurePower()">Виміряти потужність</button>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    function measurePower() {
+      let value = Math.floor(Math.random() * 9999) + 1;
+      let text = "";
+
+      if (value < 1000) {
+        text = value + " 💧 — слабачок!";
+      } else if (value < 5000) {
+        text = value + " ⚡ — середня потужність.";
+      } else if (value < 9000) {
+        text = value + " 🔥 — дуже потужний!";
+      } else {
+        text = value + " 💥 — потужний як атом!";
+      }
+
+      let resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = text;
+      resultDiv.style.display = "block";
+    }
+  </script>
+</body>
+</html>
