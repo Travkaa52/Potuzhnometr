@@ -6,80 +6,75 @@
 <title>Потужнометр</title>
 <style>
 body {
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: radial-gradient(circle, #1e1e1e, #000);
-  font-family: 'Arial', sans-serif;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #0d1b2a, #1b263b);
   color: white;
-  flex-direction: column;
+  text-align: center;
+  padding: 50px 20px;
 }
 
 h1 {
-  margin-bottom: 20px;
-  font-size: 2em;
+  font-size: 2.5em;
+  margin-bottom: 30px;
   text-shadow: 0 0 10px #ffcc00;
 }
 
-#meter-container {
-  position: relative;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: conic-gradient(
-    green 0deg 90deg,
-    yellow 90deg 270deg,
-    red 270deg 360deg
-  );
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 0 30px #ffcc00;
+#power-container {
+  width: 80%;
+  margin: 0 auto 20px;
+  height: 40px;
+  background: #333;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 20px #000 inset;
 }
 
-#needle {
-  position: absolute;
-  width: 4px;
-  height: 140px;
-  background: #fff;
-  transform-origin: bottom center;
-  transform: rotate(-90deg);
-  transition: transform 2s ease-out;
-  box-shadow: 0 0 10px #fff;
+#power-bar {
+  height: 100%;
+  width: 0%;
+  background: green;
+  border-radius: 20px;
+  transition: width 1s, background 1s;
 }
 
-#center-circle {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background: #fff;
-  border-radius: 50%;
-  z-index: 10;
-}
-
-#value {
+#power-value {
   margin-top: 20px;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+#power-text {
+  margin-top: 10px;
   font-size: 1.5em;
-  text-align: center;
-  text-shadow: 0 0 5px #ffcc00;
+  min-height: 30px;
 }
 
 button {
-  margin-top: 30px;
   background: #ffcc00;
   color: black;
   border: none;
-  padding: 15px 25px;
-  font-size: 1.2em;
+  padding: 15px 35px;
+  font-size: 1.3em;
   border-radius: 12px;
   cursor: pointer;
   transition: 0.3s;
+  box-shadow: 0 0 10px #ffcc00;
+  margin-top: 30px;
 }
 
 button:hover {
   background: #ffaa00;
+}
+
+#footer-text {
+  margin-top:50px;
+  font-size:1em;
+  color:#ccc;
+}
+
+#footer-text a {
+  color:#ffcc00;
+  text-decoration:none;
 }
 </style>
 </head>
@@ -87,52 +82,53 @@ button:hover {
 
 <h1>🔥 Потужнометр 🔥</h1>
 
-<div id="meter-container">
-  <div id="needle"></div>
-  <div id="center-circle"></div>
+<div id="power-container">
+  <div id="power-bar"></div>
 </div>
 
-<div id="value"></div>
+<div id="power-value">0</div>
+<div id="power-text"></div>
+
 <button onclick="measurePower()">Виміряти потужність</button>
 
-<audio id="sound-low" src="https://www.soundjay.com/button/beep-07.mp3"></audio>
-<audio id="sound-mid" src="https://www.soundjay.com/button/beep-08b.mp3"></audio>
-<audio id="sound-high" src="https://www.soundjay.com/button/beep-09.mp3"></audio>
-<audio id="sound-max" src="https://www.soundjay.com/button/beep-10.mp3"></audio>
+<div id="footer-text">
+  Цей сайт зроблено за мотивами <a href="https://github.com/твій_логін/potuzhnometr" target="_blank">Потужнометра</a>
+</div>
+
+<audio id="sound-high" src="https://www.soundjay.com/button/beep-07.mp3"></audio>
+<audio id="sound-max" src="https://www.soundjay.com/button/button-3.mp3"></audio>
 
 <script>
 function measurePower() {
-  let value = Math.floor(Math.random() * 9999) + 1;
-  let text = "";
-  let sound;
+  const value = Math.floor(Math.random() * 9999) + 1;
+  const bar = document.getElementById("power-bar");
+  const percent = Math.min(value / 9999 * 100, 100);
+  bar.style.width = percent + "%";
 
+  // Змінюємо колір шкали
   if (value < 1000) {
-    text = value + " 💧 — слабачок!";
-    sound = document.getElementById("sound-low");
+    bar.style.background = "green";
   } else if (value < 5000) {
-    text = value + " ⚡ — середня потужність.";
-    sound = document.getElementById("sound-mid");
+    bar.style.background = "yellow";
   } else if (value < 9000) {
-    text = value + " 🔥 — дуже потужний!";
-    sound = document.getElementById("sound-high");
+    bar.style.background = "orange";
+    document.getElementById("sound-high").play();
   } else {
-    text = value + " 💥 — потужний як атом!";
-    sound = document.getElementById("sound-max");
+    bar.style.background = "red";
+    document.getElementById("sound-max").play();
   }
 
-  // Анімація стрілки
-  const needle = document.getElementById("needle");
-  // Поворот: 0–9999 → -90° до 90° (можна змінити)
-  const angle = (value / 9999) * 180 - 90;
-  needle.style.transform = rotate(${angle}deg);
+  // Відображаємо цифрове значення
+  document.getElementById("power-value").innerText = value;
 
-  // Показ тексту
-  const valueDiv = document.getElementById("value");
-  valueDiv.innerHTML = text;
+  // Мемний підпис
+  let text = "";
+  if (value < 1000) text = "Слабачок 💧";
+  else if (value < 5000) text = "Середня потужність ⚡";
+  else if (value < 9000) text = "Дуже потужний 🔥";
+  else text = "Потужний як атом 💥";
 
-  // Відтворення звуку
-  sound.currentTime = 0;
-  sound.play();
+  document.getElementById("power-text").innerText = text;
 }
 </script>
 
