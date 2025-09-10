@@ -3,170 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Потужнометр з котом</title>
+<title>Потужнометр</title>
 <style>
 body {
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  touch-action: manipulation;
-  transition: background 1s;
-  color:white;
+  font-family: Arial, sans-serif;
   background: linear-gradient(to bottom, #1f1c2c, #928dab);
+  color: white;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
 }
-
-header { text-align: center; padding: 15px 10px; transition: text-shadow 1s; }
-h1 { font-size: 2em; margin:0; }
-#level-text { font-size: 1em; margin-top: 4px; }
-
-main { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:15px; }
-#character-container { margin:15px 0; }
-#cat-character { width:150px; transition: all 0.3s; }
-
-#power-container { width:90%; max-width:500px; height:35px; background:#2b2b3b; margin:20px 0; border-radius:20px; overflow:hidden; box-shadow: inset 0 0 15px #000; transition: box-shadow 1s; }
-#power-bar { height:100%; width:0%; background:#00ffd5; border-radius:20px; transition:width 1s, background 0.5s; }
-
-.stats { display:flex; justify-content:space-between; gap:10px; margin-bottom:15px; flex-wrap:wrap; }
-.stats div { font-size:1em; padding:8px 12px; background: rgba(255,255,255,0.05); border-radius:12px; flex:1 1 30%; text-align:center; transition:transform 0.2s, background 0.3s;}
-.stats div:hover { transform: scale(1.05); background: rgba(255,255,255,0.15); }
-
-button {
-  background: linear-gradient(135deg, #ff6ec4, #7873f5);
-  color: white; border: none; padding: 12px 25px; font-size: 1em; border-radius: 12px; cursor: pointer;
-  margin: 8px; box-shadow: 0 0 15px rgba(255,110,196,0.6); transition: transform 0.2s, box-shadow 0.3s;
+h1 { font-size: 2em; margin-bottom: 20px; text-shadow: 0 0 10px #ffd700; }
+#power-container { width: 80%; margin: 20px auto; height: 40px; background: #333; border-radius: 20px; overflow: hidden; }
+#power-bar { height: 100%; width: 0%; background: green; border-radius: 20px; transition: width 0.5s, background 0.5s; }
+#power-value { margin-top: 10px; font-size: 1.5em; font-weight: bold; }
+#power-text { margin-top: 5px; font-size: 1.2em; min-height: 20px; }
+button { background: #ff6f61; color: white; border: none; padding: 10px 20px; font-size: 1em; border-radius: 8px; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+button:hover { background: #ff3b2e; }
+#cat-container img { width: 150px; height: 150px; margin-top: 20px; }
+.skin-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+.skin { cursor: pointer; text-align: center; }
+.skin img { width: 80px; height: 80px; border: 2px solid #fff; border-radius: 8px; }
+#stats { margin-top: 30px; }
+table { margin: 0 auto; border-collapse: collapse; width: 90%; max-width: 600px; }
+table, th, td { border: 1px solid #fff; }
+th, td { padding: 8px; text-align: center; }
+.level-up { animation: glow 1s infinite alternate; }
+@keyframes glow {
+  0% { text-shadow: 0 0 5px #ff0; }
+  100% { text-shadow: 0 0 20px #ff0; }
 }
-button:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(255,110,196,0.9); }
-
-#mood-text { font-size: 1.2em; margin-top: 8px; transition: color 0.5s; text-align:center; }
-#level-display { font-size:1em; margin-top:4px; }
-
-footer { background:#2b2b3b; display:flex; justify-content: space-around; padding:12px 0; box-shadow:0 -5px 15px rgba(0,0,0,0.5);}
-footer button { flex:1; margin:0 5px; font-size:1em; transition: transform 0.2s, background 0.3s;}
-footer button:hover { transform: translateY(-2px); }
-
-section { display:none; width:100%; max-width:600px;}
-section.active { display:block; animation:fadeIn 0.5s ease-in-out;}
-@keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
-
-table { width:100%; border-collapse: collapse; margin-top:15px; color:white; font-size:0.9em;}
-th, td { padding:8px; border:1px solid #fff; text-align:center;}
-th { background-color:#ff6ec4; color:white;}
-td { background-color: rgba(255,255,255,0.1);}
-.skin-container { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:10px;}
-.skin { cursor:pointer; padding:5px; border:2px solid #fff; border-radius:8px; transition: transform 0.2s, border-color 0.3s;}
-.skin img { width:70px; height:70px;}
-.skin:hover { transform: scale(1.1); border-color:#ff6ec4;}
 </style>
 </head>
 <body>
 
-<header>
 <h1>🔥 Потужнометр 🔥</h1>
-<div id="level-text">Рівень: 1 / 100</div>
-</header>
 
-<main>
-<section id="game-section" class="active">
-<div id="character-container">
-  <img id="cat-character" src="skins/cat_default.png" alt="Кіт">
+<div id="power-container">
+  <div id="power-bar"></div>
+</div>
+<div id="power-value">0</div>
+<div id="power-text"></div>
+
+<button id="measure-btn">Виміряти потужність</button>
+
+<div id="cat-container">
+  <!-- По умолчанию кот скина "cool" -->
+  <img id="cat-img" src="skins/cool.png" alt="Кіт">
 </div>
 
-<div id="power-container"><div id="power-bar"></div></div>
+<h2>Магазин скинів</h2>
+<div class="skin-container" id="shop"></div>
 
-<div class="stats">
-<div>Результат: <span id="power-value">0</span></div>
-<div>Очки: <span id="points-value">0</span></div>
-<div>Енергія: <span id="energy-value">50</span></div>
-<div>Рівень: <span id="level-value">1</span></div>
-</div>
-
-<div id="mood-text">Я сумний 😔</div>
-
-<button id="measure-btn" onclick="measurePower()">Виміряти потужність</button>
-<button onclick="upgrade('energy')">Прокачати енергію (10 очок)</button>
-</section>
-
-<section id="shop-section">
-<h2>Магазин</h2>
-<p>Покупайте скини та бонуси за очки.</p>
-<button onclick="buyItem('bonus1',5)">Купити бонус 1 (+5 енергії)</button>
-<button onclick="buyItem('bonus2',10)">Купити бонус 2 (+10 енергії)</button>
-
-<h3>Скини</h3>
-<div class="skin-container">
-  <div class="skin" onclick="applySkin('cat_default.png')"><img src="skins/cat_default.png"><p>Базовий</p></div>
-  <div class="skin" onclick="applySkin('cat_warrior.png')"><img src="skins/cat_warrior.png"><p>Воїн (50 очок)</p></div>
-  <div class="skin" onclick="applySkin('cat_mage.png')"><img src="skins/cat_mage.png"><p>Маг (70 очок)</p></div>
-</div>
-</section>
-
-<section id="stats-section">
 <h2>Статистика</h2>
-<div id="high-score">Найвищий результат: <span id="high-score-value">0</span></div>
-<h3>Таблиця лідерів</h3>
-<table id="leaderboard">
-<thead><tr><th>Місце</th><th>Ім'я</th><th>Очки</th></tr></thead>
-<tbody></tbody>
-</table>
-</section>
-
-</main>
-
-<footer>
-<button onclick="switchSection('game-section')">Гра</button>
-<button onclick="switchSection('shop-section')">Магазин</button>
-<button onclick="switchSection('stats-section')">Статистика</button>
-</footer>
+<div id="stats">
+  <table>
+    <thead>
+      <tr>
+        <th>Місце</th>
+        <th>Ім’я</th>
+        <th>Очки</th>
+      </tr>
+    </thead>
+    <tbody id="leaderboard">
+    </tbody>
+  </table>
+</div>
 
 <script>
-// Ім'я Telegram
-const tg = window.Telegram?.WebApp;
-const username = tg?.initDataUnsafe?.user?.username || tg?.initDataUnsafe?.user?.first_name || "Гравець";
+// Список всех скинов кроме "cool"
+const skins = [
+  "Gemini_Generated_Image_5nszyk5nszyk5nsz.png",
+  "Gemini_Generated_Image_kuuk4dkuuk4dkuuk.png",
+  "Gemini_Generated_Image_mwuup6mwuup6mwuu.png",
+  "Gemini_Generated_Image_n8rum0n8rum0n8ru.png",
+  "Gemini_Generated_Image_upj5p1upj5p1upj5cool.png",
+  "Gemini_Generated_Image_extra1.png",
+  "Gemini_Generated_Image_extra2.png",
+  "Gemini_Generated_Image_extra3.png"
+];
 
-// Дані гравця
-let points = parseInt(localStorage.getItem("points"))||0;
-let energy = parseInt(localStorage.getItem("energy"))||50;
-let highScore = parseInt(localStorage.getItem("highScore"))||0;
-let level = parseInt(localStorage.getItem("level"))||1;
-let xp = parseInt(localStorage.getItem("xp"))||0;
-let leaderboard = JSON.parse(localStorage.getItem("leaderboard"))||[];
-let currentSkin = localStorage.getItem("catSkin")||"cat_default.png";
-const catImg = document.getElementById("cat-character");
+// Магазин скинов
+const shopContainer = document.getElementById('shop');
+skins.forEach(skin => {
+  const div = document.createElement('div');
+  div.classList.add('skin');
+  div.innerHTML = `<img src="skins/${skin}" alt="${skin}"><p>${skin.split('.')[0]}</p>`;
+  div.onclick = () => selectSkin(skin);
+  shopContainer.appendChild(div);
+});
 
-// Обновлення UI
-function updateUI(){
-document.getElementById("points-value").innerText=points;
-document.getElementById("energy-value").innerText=energy;
-document.getElementById("high-score-value").innerText=highScore;
-document.getElementById("level-value").innerText=level;
-catImg.src="skins/"+currentSkin;
-updateMood();
-updateTheme();
-}
-updateUI();
-
-// Ліміт вимірювань
-let measureCount=0;
-let lastReset=Date.now();
-
-// Функція зміни теми кожні 3 рівні
-function updateTheme(){
-const headers=document.querySelector('header');
-const body=document.body;
-const themeLevel=Math.floor(level/3)%3;
-switch(themeLevel){
-  case 0: body.style.background="linear-gradient(to bottom, #1f1c2c, #928dab)"; headers.style.textShadow="0 0 15px #00ffd5"; break;
-  case 1: body.style.background="linear-gradient(to bottom, #42275a, #734b6d)"; headers.style.textShadow="0 0 15px #ff6ec4"; break;
-  case 2: body.style.background="linear-gradient(to bottom, #283e51, #485563)"; headers.style.textShadow="0 0 15px #00ffea"; break;
-}
+function selectSkin(skin) {
+  document.getElementById('cat-img').src = 'skins/' + skin;
+  localStorage.setItem('selectedSkin', skin);
 }
 
-// Анімація кота
-function animateCat(){ catImg.style.transform="scale(1.1)"; setTimeout(()=>{catImg.style.transform="scale(1)";},300); }
+// Прогресс игрока
+let points = parseInt(localStorage.getItem('points')) || 0;
+let level = parseInt(localStorage.getItem('level')) || 1;
 
-// Вимір потужності
-function measurePower(){
-const now=Date.now();
-if(now-lastReset>5*60*
+// Таблица лидеров (имитация, для теста)
+let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+
+// Отображение лидеров
+function updateLeaderboard() {
+  const tbody = document.getElementById('leaderboard');
+  tbody.innerHTML = '';
+  const sorted = leaderboard.sort((a,b) => b.points - a.points);
+  sorted.forEach((user,i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td><td>${user.name}</td><td>${user.points}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// Логика измерения мощности
+const measureBtn = document.getElementById('measure-btn');
+const powerBar = document.getElementById('power-bar');
+const powerValue = document.getElementById('power-value');
+const powerText = document.getElementById('power-text');
+
+let lastClick = 0;
+
+measureBtn.addEventListener('click', () => {
+  const now = Date.now();
+  if(now - lastClick < 30000) { // Ограничение 30 секунд
+    alert("Зачекай трохи перед наступним вимірюванням!");
+    return;
+  }
+  lastClick = now;
+
+  const value = Math.floor(Math.random() * 9999) + 1;
+  const percent = Math.min(value / 9999 * 100, 100);
+  powerBar.style.width = percent + "%";
+
+  if(value < 1000) powerBar.style.background = "green";
+  else if(value < 5000) powerBar.style.background = "yellow";
+  else if(value < 9000) powerBar.style.background = "orange";
+  else powerBar.style.background = "red";
+
+  powerValue.innerText = value;
+  if(value < 1000) powerText.innerText = "Слабачок 💧";
+  else if(value < 5000) powerText.innerText = "Середня потужність ⚡";
+  else if(value < 9000) powerText.innerText = "Дуже потужний 🔥";
+  else powerText.innerText = "Потужний як атом 💥";
+
+  // Добавляем очки
+  points += Math.floor(value / 100); // 1 очко за каждые 100 мощности
+  localStorage.setItem('points', points);
+
+  // Уровни до 100
+  level = Math.min(100, Math.floor(points / 50) + 1);
+  localStorage.setItem('level', level);
+
+  // Эффект изменения интерфейса каждые 3 уровня
+  if(level % 3 === 0) {
+    document.body.classList.add('level-up');
+  } else {
+    document.body.classList.remove('level-up');
+  }
+
+  // Обновляем leaderboard (имя можно взять из Telegram бота)
+  const username = "User"; // заменить на динамическое имя из Telegram
+  const userIndex = leaderboard.findIndex(u=>u.name===username);
+  if(userIndex>=0) leaderboard[userIndex].points = points;
+  else leaderboard.push({name: username, points});
+  localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+  updateLeaderboard();
+});
+
+// Инициализация
+updateLeaderboard();
+const savedSkin = localStorage.getItem('selectedSkin');
+if(savedSkin) document.getElementById('cat-img').src = 'skins/' + savedSkin;
+</script>
+
+</body>
+</html>
