@@ -3,17 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Потужнометр + 3D Персонаж</title>
+<title>Потужнометр</title>
 <style>
 body {
-  font-family: Arial, sans-serif;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
   background: linear-gradient(to bottom, #0d1b2a, #1b263b);
   color: white;
-  text-align: center;
-  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-h1 { font-size: 2.5em; margin-bottom: 20px; text-shadow: 0 0 10px #ffcc00; }
+header {
+  text-align: center;
+  padding: 20px;
+  text-shadow: 0 0 10px #ffcc00;
+}
+
+h1 { font-size: 2.5em; }
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  transition: all 0.5s;
+}
 
 #power-container {
   width: 80%;
@@ -22,7 +40,7 @@ h1 { font-size: 2.5em; margin-bottom: 20px; text-shadow: 0 0 10px #ffcc00; }
   margin: 20px auto;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 0 20px #000 inset;
+  box-shadow: inset 0 0 15px #000;
 }
 
 #power-bar {
@@ -30,28 +48,47 @@ h1 { font-size: 2.5em; margin-bottom: 20px; text-shadow: 0 0 10px #ffcc00; }
   width: 0%;
   background: green;
   border-radius: 20px;
-  transition: width 1s, background 1s;
+  transition: width 1s, background 0.5s;
 }
 
-#power-value, #points-value, #energy-value, #mood-text {
-  font-size: 1.8em;
-  margin: 10px 0;
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.stats div {
+  font-size: 1.5em;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 15px;
+  transition: 0.3s;
+}
+
+.stats div:hover {
+  background: rgba(255,255,255,0.15);
+  transform: scale(1.05);
 }
 
 button {
   background: #ffcc00;
   color: black;
   border: none;
-  padding: 12px 30px;
+  padding: 15px 35px;
   font-size: 1.2em;
   border-radius: 12px;
   cursor: pointer;
-  margin: 5px;
-  box-shadow: 0 0 10px #ffcc00;
-  transition: 0.3s;
+  margin: 10px;
+  box-shadow: 0 0 15px #ffcc00;
+  transition: transform 0.2s, background 0.3s, box-shadow 0.3s;
 }
 
-button:hover { background: #ffaa00; }
+button:hover {
+  transform: translateY(-3px);
+  background: #ffaa00;
+  box-shadow: 0 0 20px #ffaa00;
+}
 
 #sketchfab-container {
   width: 400px;
@@ -60,47 +97,106 @@ button:hover { background: #ffaa00; }
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: transform 0.3s;
 }
 
 #sketchfab-frame {
   width: 100%;
   height: 100%;
-  transition: transform 0.3s;
+}
+
+#mood-text {
+  font-size: 1.5em;
+  margin-top: 10px;
+}
+
+footer {
+  background: #1b263b;
+  display: flex;
+  justify-content: space-around;
+  padding: 15px 0;
+  box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
+}
+
+footer button {
+  flex: 1;
+  margin: 0 5px;
+}
+
+section {
+  display: none;
+}
+
+section.active {
+  display: block;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
 </head>
 <body>
 
-<h1>🔥 Потужнометр + 3D Персонаж 🔥</h1>
+<header>
+  <h1>🔥 Потужнометр + 3D Персонаж 🔥</h1>
+</header>
 
-<div id="power-container">
-  <div id="power-bar"></div>
-</div>
-<div>Результат: <span id="power-value">0</span></div>
-<div>Очки: <span id="points-value">0</span></div>
+<main>
+  <!-- Раздел Потужнометр -->
+  <section id="game-section" class="active">
+    <div id="power-container">
+      <div id="power-bar"></div>
+    </div>
+    <div class="stats">
+      <div>Результат: <span id="power-value">0</span></div>
+      <div>Очки: <span id="points-value">0</span></div>
+      <div>Енергія: <span id="energy-value">50</span></div>
+    </div>
+    <div id="sketchfab-container">
+      <iframe id="sketchfab-frame" title="Ukrainian Soldier" frameborder="0" allowfullscreen
+        mozallowfullscreen="true" webkitallowfullscreen="true"
+        allow="autoplay; fullscreen; xr-spatial-tracking"
+        src="https://sketchfab.com/models/94f74f6bdd994733a8a40c7ff088e12f/embed">
+      </iframe>
+    </div>
+    <div id="mood-text">Я сумний 😔</div>
+    <button onclick="measurePower()">Виміряти потужність</button>
+    <button onclick="upgrade('energy')">Прокачати енергію (10 очок)</button>
+  </section>
 
-<div id="sketchfab-container">
-  <iframe id="sketchfab-frame" title="Ukrainian Soldier" frameborder="0" allowfullscreen
-    mozallowfullscreen="true" webkitallowfullscreen="true"
-    allow="autoplay; fullscreen; xr-spatial-tracking"
-    src="https://sketchfab.com/models/94f74f6bdd994733a8a40c7ff088e12f/embed">
-  </iframe>
-</div>
+  <!-- Раздел Магазин -->
+  <section id="shop-section">
+    <h2>Магазин</h2>
+    <p>Тут можна купити різні бонуси або косметику для персонажа.</p>
+    <button onclick="alert('Магазин буде додано пізніше!')">Купити бонус</button>
+  </section>
 
-<div id="mood-text">Я сумний 😔</div>
-<div>Енергія персонажа: <span id="energy-value">50</span></div>
+  <!-- Раздел Статистика -->
+  <section id="stats-section">
+    <h2>Статистика</h2>
+    <p>Пройдено ігор, найвищий результат та накопичені очки.</p>
+    <div id="high-score">Найвищий результат: <span id="high-score-value">0</span></div>
+  </section>
+</main>
 
-<button onclick="measurePower()">Виміряти потужність</button>
-<button onclick="upgrade('energy')">Прокачати енергію (10 очок)</button>
+<footer>
+  <button onclick="switchSection('game-section')">Гра</button>
+  <button onclick="switchSection('shop-section')">Магазин</button>
+  <button onclick="switchSection('stats-section')">Статистика</button>
+</footer>
 
 <script>
 let points = parseInt(localStorage.getItem("points")) || 0;
 let energy = parseInt(localStorage.getItem("energy")) || 50;
+let highScore = parseInt(localStorage.getItem("highScore")) || 0;
 
 document.getElementById("points-value").innerText = points;
 document.getElementById("energy-value").innerText = energy;
+document.getElementById("high-score-value").innerText = highScore;
 
-// Анімація числа
 function animateValue(id, start, end, duration) {
   let range = end - start;
   let current = start;
@@ -116,7 +212,6 @@ function animateValue(id, start, end, duration) {
   }, 20);
 }
 
-// Вимір потужності
 function measurePower() {
   const value = Math.floor(Math.random() * 9999) + 1;
   const bar = document.getElementById("power-bar");
@@ -128,7 +223,6 @@ function measurePower() {
   else if(value < 9000) bar.style.background = "orange";
   else {
     bar.style.background = "red";
-    // Ефект для персонажа
     const frame = document.getElementById("sketchfab-frame");
     frame.style.transform = "scale(1.05)";
     setTimeout(()=> frame.style.transform = "scale(1)", 500);
@@ -136,18 +230,21 @@ function measurePower() {
 
   animateValue("power-value", 0, value, 1000);
 
-  // Додаємо очки
   const earnedPoints = Math.floor(value / 100);
   points += earnedPoints;
   document.getElementById("points-value").innerText = points;
 
+  if(value > highScore){
+    highScore = value;
+    document.getElementById("high-score-value").innerText = highScore;
+    localStorage.setItem("highScore", highScore);
+  }
+
   localStorage.setItem("points", points);
   localStorage.setItem("energy", energy);
-
   updateMood();
 }
 
-// Прокачка персонажа
 function upgrade(type){
   if(points < 10){ alert("Недостатньо очок!"); return; }
   points -= 10;
@@ -159,7 +256,6 @@ function upgrade(type){
     energy = Math.min(100, energy);
     localStorage.setItem("energy", energy);
     document.getElementById("energy-value").innerText = energy;
-    // Реакція персонажа
     const frame = document.getElementById("sketchfab-frame");
     frame.style.transform = "translateY(-10px)";
     setTimeout(()=> frame.style.transform="translateY(0)", 300);
@@ -168,7 +264,6 @@ function upgrade(type){
   updateMood();
 }
 
-// Змінюємо настрій персонажа
 function updateMood(){
   const moodText = document.getElementById("mood-text");
   if(energy < 30) moodText.innerText = "Я сумний 😔";
@@ -176,7 +271,12 @@ function updateMood(){
   else moodText.innerText = "Я дуже щасливий 😄";
 }
 
-// Ініціалізація настрою при завантаженні
+function switchSection(sectionId){
+  document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+  document.getElementById(sectionId).classList.add('active');
+}
+
+// Инициализация
 updateMood();
 </script>
 
