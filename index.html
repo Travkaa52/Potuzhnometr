@@ -9,7 +9,7 @@
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
-  background: linear-gradient(to bottom, #0d1b2a, #1b263b);
+  background: linear-gradient(to bottom, #1f1c2c, #928dab);
   color: white;
   display: flex;
   flex-direction: column;
@@ -20,7 +20,7 @@ body {
 header {
   text-align: center;
   padding: 15px 10px;
-  text-shadow: 0 0 10px #ffcc00;
+  text-shadow: 0 0 15px #00ffd5;
 }
 
 h1 { font-size: 2em; margin:0; }
@@ -38,7 +38,7 @@ main {
   width: 90%;
   max-width: 500px;
   height: 35px;
-  background: #333;
+  background: #2b2b3b;
   margin: 20px 0;
   border-radius: 20px;
   overflow: hidden;
@@ -48,7 +48,7 @@ main {
 #power-bar {
   height: 100%;
   width: 0%;
-  background: green;
+  background: #00ffd5;
   border-radius: 20px;
   transition: width 1s, background 0.5s;
 }
@@ -77,22 +77,21 @@ main {
 }
 
 button {
-  background: #ffcc00;
-  color: black;
+  background: linear-gradient(135deg, #ff6ec4, #7873f5);
+  color: white;
   border: none;
   padding: 12px 25px;
   font-size: 1em;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   margin: 8px;
-  box-shadow: 0 0 15px #ffcc00;
-  transition: transform 0.2s, background 0.3s, box-shadow 0.3s;
+  box-shadow: 0 0 15px rgba(255,110,196,0.6);
+  transition: transform 0.2s, box-shadow 0.3s;
 }
 
 button:hover {
   transform: translateY(-2px);
-  background: #ffaa00;
-  box-shadow: 0 0 20px #ffaa00;
+  box-shadow: 0 0 25px rgba(255,110,196,0.9);
 }
 
 #mood-text {
@@ -103,7 +102,7 @@ button:hover {
 }
 
 footer {
-  background: #1b263b;
+  background: #2b2b3b;
   display: flex;
   justify-content: space-around;
   padding: 12px 0;
@@ -114,11 +113,10 @@ footer button {
   flex: 1;
   margin: 0 5px;
   font-size: 1em;
-  transition: background 0.3s, transform 0.2s;
+  transition: transform 0.2s, background 0.3s;
 }
 
 footer button:hover {
-  background: #ffaa00;
   transform: translateY(-2px);
 }
 
@@ -153,8 +151,8 @@ th, td {
 }
 
 th {
-  background-color: #ffcc00;
-  color: black;
+  background-color: #ff6ec4;
+  color: white;
 }
 
 td {
@@ -233,11 +231,16 @@ td {
   <button onclick="switchSection('stats-section')">Статистика</button>
 </footer>
 
+<!-- Telegram Web App SDK должен быть подключен автоматически при запуске через Telegram -->
 <script>
 let points = parseInt(localStorage.getItem("points")) || 0;
 let energy = parseInt(localStorage.getItem("energy")) || 50;
 let highScore = parseInt(localStorage.getItem("highScore")) || 0;
 let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+
+// Получаем имя пользователя из Telegram
+const tg = window.Telegram?.WebApp;
+const username = tg?.initDataUnsafe?.user?.username || tg?.initDataUnsafe?.user?.first_name || "Гравець";
 
 document.getElementById("points-value").innerText = points;
 document.getElementById("energy-value").innerText = energy;
@@ -264,10 +267,10 @@ function measurePower() {
   const percent = Math.min(value / 9999 * 100, 100);
   bar.style.width = percent + "%";
 
-  if(value < 1000) bar.style.background = "green";
-  else if(value < 5000) bar.style.background = "yellow";
-  else if(value < 9000) bar.style.background = "orange";
-  else bar.style.background = "red";
+  if(value < 1000) bar.style.background = "#00ffd5";
+  else if(value < 5000) bar.style.background = "#ffe600";
+  else if(value < 9000) bar.style.background = "#ff6ec4";
+  else bar.style.background = "#ff3c3c";
 
   animateValue("power-value", 0, value, 1000);
 
@@ -284,7 +287,7 @@ function measurePower() {
   localStorage.setItem("points", points);
   localStorage.setItem("energy", energy);
 
-  addToLeaderboard(prompt("Введіть своє ім'я:"), points);
+  addToLeaderboard(points);
   updateMood();
 }
 
@@ -317,12 +320,12 @@ function switchSection(sectionId){
   if(sectionId === 'stats-section') renderLeaderboard();
 }
 
-function addToLeaderboard(name, score){
-  if(!name) name = "Гравець";
-  leaderboard.push({name: name, score: score});
+function addToLeaderboard(score){
+  leaderboard.push({name: username, score: score});
   leaderboard.sort((a,b) => b.score - a.score);
   leaderboard = leaderboard.slice(0,10);
   localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+  renderLeaderboard();
 }
 
 function renderLeaderboard(){
@@ -335,6 +338,7 @@ function renderLeaderboard(){
   });
 }
 
+// Инициализация
 updateMood();
 renderLeaderboard();
 </script>
