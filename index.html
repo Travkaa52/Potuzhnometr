@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Потужнометр + Прокачка персонажа ДАНЯ ИДИ НАХУЙ ИЗЗА ТЕБЯ БОТ ЛАГАЕТ</title>
+<title>Потужнометр + 3D Персонаж</title>
 <style>
 body {
   font-family: Arial, sans-serif;
@@ -12,17 +12,19 @@ body {
   text-align: center;
   padding: 30px 20px;
 }
+
 h1 { font-size: 2.5em; margin-bottom: 20px; text-shadow: 0 0 10px #ffcc00; }
 
 #power-container {
   width: 80%;
-  margin: 20px auto;
   height: 40px;
   background: #333;
+  margin: 20px auto;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 0 20px #000 inset;
 }
+
 #power-bar {
   height: 100%;
   width: 0%;
@@ -48,37 +50,50 @@ button {
   box-shadow: 0 0 10px #ffcc00;
   transition: 0.3s;
 }
+
 button:hover { background: #ffaa00; }
 
-#tom { width: 200px; margin: 20px; }
+#sketchfab-container {
+  width: 400px;
+  height: 400px;
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-/* Ефект блиску для максимального бару */
-@keyframes blink {
-  0%,100% { box-shadow: 0 0 20px red; }
-  50% { box-shadow: 0 0 40px yellow; }
+#sketchfab-frame {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s;
 }
 </style>
 </head>
 <body>
 
-<h1>🔥 Потужнометр + Прокачка персонажа 🔥</h1>
+<h1>🔥 Потужнометр + 3D Персонаж 🔥</h1>
 
-<div id="power-container"><div id="power-bar"></div></div>
+<div id="power-container">
+  <div id="power-bar"></div>
+</div>
 <div>Результат: <span id="power-value">0</span></div>
 <div>Очки: <span id="points-value">0</span></div>
 
-<img id="tom" src="https://i.imgur.com/3s5c8I0.png">
+<div id="sketchfab-container">
+  <iframe id="sketchfab-frame" title="Ukrainian Soldier" frameborder="0" allowfullscreen
+    mozallowfullscreen="true" webkitallowfullscreen="true"
+    allow="autoplay; fullscreen; xr-spatial-tracking"
+    src="https://sketchfab.com/models/94f74f6bdd994733a8a40c7ff088e12f/embed">
+  </iframe>
+</div>
+
 <div id="mood-text">Я сумний 😔</div>
 <div>Енергія персонажа: <span id="energy-value">50</span></div>
 
 <button onclick="measurePower()">Виміряти потужність</button>
 <button onclick="upgrade('energy')">Прокачати енергію (10 очок)</button>
 
-<audio id="sound-high" src="https://www.soundjay.com/button/beep-07.mp3"></audio>
-<audio id="sound-max" src="https://www.soundjay.com/button/button-3.mp3"></audio>
-
 <script>
-// Завантаження прогресу
 let points = parseInt(localStorage.getItem("points")) || 0;
 let energy = parseInt(localStorage.getItem("energy")) || 50;
 
@@ -108,19 +123,15 @@ function measurePower() {
   const percent = Math.min(value / 9999 * 100, 100);
   bar.style.width = percent + "%";
 
-  const highSound = document.getElementById("sound-high");
-  const maxSound = document.getElementById("sound-max");
-  bar.style.animation = "";
-
   if(value < 1000) bar.style.background = "green";
   else if(value < 5000) bar.style.background = "yellow";
-  else if(value < 9000) {
-    bar.style.background = "orange";
-    highSound.play();
-  } else {
+  else if(value < 9000) bar.style.background = "orange";
+  else {
     bar.style.background = "red";
-    maxSound.play();
-    bar.style.animation = "blink 1s infinite";
+    // Ефект для персонажа
+    const frame = document.getElementById("sketchfab-frame");
+    frame.style.transform = "scale(1.05)";
+    setTimeout(()=> frame.style.transform = "scale(1)", 500);
   }
 
   animateValue("power-value", 0, value, 1000);
@@ -130,36 +141,35 @@ function measurePower() {
   points += earnedPoints;
   document.getElementById("points-value").innerText = points;
 
-  // Зберігаємо прогрес
   localStorage.setItem("points", points);
   localStorage.setItem("energy", energy);
 
-  // Оновлення настрою персонажа
   updateMood();
 }
 
 // Прокачка персонажа
-function upgrade(type) {
-  if(points < 10){
-    alert("Недостатньо очок!");
-    return;
-  }
+function upgrade(type){
+  if(points < 10){ alert("Недостатньо очок!"); return; }
   points -= 10;
+  localStorage.setItem("points", points);
+  document.getElementById("points-value").innerText = points;
+
   if(type === 'energy'){
     energy += 10;
     energy = Math.min(100, energy);
+    localStorage.setItem("energy", energy);
     document.getElementById("energy-value").innerText = energy;
-    alert("Енергія персонажа збільшена!");
+    // Реакція персонажа
+    const frame = document.getElementById("sketchfab-frame");
+    frame.style.transform = "translateY(-10px)";
+    setTimeout(()=> frame.style.transform="translateY(0)", 300);
   }
 
-  document.getElementById("points-value").innerText = points;
-  localStorage.setItem("points", points);
-  localStorage.setItem("energy", energy);
   updateMood();
 }
 
-// Змінюємо настрій персонажа залежно від енергії
-function updateMood() {
+// Змінюємо настрій персонажа
+function updateMood(){
   const moodText = document.getElementById("mood-text");
   if(energy < 30) moodText.innerText = "Я сумний 😔";
   else if(energy < 70) moodText.innerText = "Я щасливий 🙂";
