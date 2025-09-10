@@ -1,71 +1,140 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Потужнометр</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #1e90ff, #ff4500);
-      color: white;
-      text-align: center;
-      padding: 40px;
-    }
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
-    }
-    button {
-      background: #ffcc00;
-      color: black;
-      border: none;
-      padding: 15px 25px;
-      font-size: 1.2em;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #ffaa00;
-    }
-    .result {
-      margin-top: 30px;
-      font-size: 2em;
-      font-weight: bold;
-      padding: 20px;
-      border-radius: 15px;
-      background: rgba(0,0,0,0.4);
-      display: none;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Потужнометр</title>
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle, #1e1e1e, #000);
+  font-family: 'Arial', sans-serif;
+  color: white;
+  flex-direction: column;
+}
+
+h1 {
+  margin-bottom: 20px;
+  font-size: 2em;
+  text-shadow: 0 0 10px #ffcc00;
+}
+
+#meter-container {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: conic-gradient(
+    green 0deg 90deg,
+    yellow 90deg 270deg,
+    red 270deg 360deg
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 30px #ffcc00;
+}
+
+#needle {
+  position: absolute;
+  width: 4px;
+  height: 140px;
+  background: #fff;
+  transform-origin: bottom center;
+  transform: rotate(-90deg);
+  transition: transform 2s ease-out;
+  box-shadow: 0 0 10px #fff;
+}
+
+#center-circle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  z-index: 10;
+}
+
+#value {
+  margin-top: 20px;
+  font-size: 1.5em;
+  text-align: center;
+  text-shadow: 0 0 5px #ffcc00;
+}
+
+button {
+  margin-top: 30px;
+  background: #ffcc00;
+  color: black;
+  border: none;
+  padding: 15px 25px;
+  font-size: 1.2em;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #ffaa00;
+}
+</style>
 </head>
 <body>
-  <h1>🔥 Потужнометр 🔥</h1>
-  <p>Натисни кнопку та дізнайся свою потужність!</p>
-  <button onclick="measurePower()">Виміряти потужність</button>
 
-  <div class="result" id="result"></div>
+<h1>🔥 Потужнометр 🔥</h1>
 
-  <script>
-    function measurePower() {
-      let value = Math.floor(Math.random() * 9999) + 1;
-      let text = "";
+<div id="meter-container">
+  <div id="needle"></div>
+  <div id="center-circle"></div>
+</div>
 
-      if (value < 1000) {
-        text = value + " 💧 — слабачок!";
-      } else if (value < 5000) {
-        text = value + " ⚡ — середня потужність.";
-      } else if (value < 9000) {
-        text = value + " 🔥 — дуже потужний!";
-      } else {
-        text = value + " 💥 — потужний як атом!";
-      }
+<div id="value"></div>
+<button onclick="measurePower()">Виміряти потужність</button>
 
-      let resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = text;
-      resultDiv.style.display = "block";
-    }
-  </script>
+<audio id="sound-low" src="https://www.soundjay.com/button/beep-07.mp3"></audio>
+<audio id="sound-mid" src="https://www.soundjay.com/button/beep-08b.mp3"></audio>
+<audio id="sound-high" src="https://www.soundjay.com/button/beep-09.mp3"></audio>
+<audio id="sound-max" src="https://www.soundjay.com/button/beep-10.mp3"></audio>
+
+<script>
+function measurePower() {
+  let value = Math.floor(Math.random() * 9999) + 1;
+  let text = "";
+  let sound;
+
+  if (value < 1000) {
+    text = value + " 💧 — слабачок!";
+    sound = document.getElementById("sound-low");
+  } else if (value < 5000) {
+    text = value + " ⚡ — середня потужність.";
+    sound = document.getElementById("sound-mid");
+  } else if (value < 9000) {
+    text = value + " 🔥 — дуже потужний!";
+    sound = document.getElementById("sound-high");
+  } else {
+    text = value + " 💥 — потужний як атом!";
+    sound = document.getElementById("sound-max");
+  }
+
+  // Анімація стрілки
+  const needle = document.getElementById("needle");
+  // Поворот: 0–9999 → -90° до 90° (можна змінити)
+  const angle = (value / 9999) * 180 - 90;
+  needle.style.transform = rotate(${angle}deg);
+
+  // Показ тексту
+  const valueDiv = document.getElementById("value");
+  valueDiv.innerHTML = text;
+
+  // Відтворення звуку
+  sound.currentTime = 0;
+  sound.play();
+}
+</script>
+
 </body>
 </html>
