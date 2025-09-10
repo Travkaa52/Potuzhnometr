@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Потужнометр</title>
 <style>
-/* Базовые стили */
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
@@ -17,212 +16,86 @@ body {
   touch-action: manipulation;
 }
 
-header {
-  text-align: center;
-  padding: 15px 10px;
-  text-shadow: 0 0 15px #00ffd5;
-}
-
+header { text-align: center; padding: 15px 10px; text-shadow: 0 0 15px #00ffd5; }
 h1 { font-size: 2em; margin:0; }
 
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 15px;
-}
+main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 15px; }
 
 #power-container {
-  width: 90%;
-  max-width: 500px;
-  height: 35px;
-  background: #2b2b3b;
-  margin: 20px 0;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: inset 0 0 15px #000;
+  width: 90%; max-width: 500px; height: 35px; background: #2b2b3b; margin: 20px 0;
+  border-radius: 20px; overflow: hidden; box-shadow: inset 0 0 15px #000;
 }
 
 #power-bar {
-  height: 100%;
-  width: 0%;
-  background: #00ffd5;
-  border-radius: 20px;
-  transition: width 1s, background 0.5s;
+  height: 100%; width: 0%; background: #00ffd5; border-radius: 20px; transition: width 1s, background 0.5s;
 }
 
-.stats {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 15px;
-  flex-wrap: wrap;
-}
-
-.stats div {
-  font-size: 1em;
-  padding: 8px 12px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  transition: transform 0.2s, background 0.3s;
-  flex: 1 1 30%;
-  text-align: center;
-}
-
-.stats div:hover {
-  transform: scale(1.05);
-  background: rgba(255,255,255,0.15);
-}
+.stats { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+.stats div { font-size: 1em; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 12px; transition: transform 0.2s, background 0.3s; flex: 1 1 30%; text-align: center; }
+.stats div:hover { transform: scale(1.05); background: rgba(255,255,255,0.15); }
 
 button {
   background: linear-gradient(135deg, #ff6ec4, #7873f5);
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  font-size: 1em;
-  border-radius: 12px;
-  cursor: pointer;
-  margin: 8px;
-  box-shadow: 0 0 15px rgba(255,110,196,0.6);
-  transition: transform 0.2s, box-shadow 0.3s;
+  color: white; border: none; padding: 12px 25px; font-size: 1em; border-radius: 12px; cursor: pointer;
+  margin: 8px; box-shadow: 0 0 15px rgba(255,110,196,0.6); transition: transform 0.2s, box-shadow 0.3s;
 }
+button:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(255,110,196,0.9); }
 
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 25px rgba(255,110,196,0.9);
-}
-
-#mood-text {
-  font-size: 1.2em;
-  margin-top: 8px;
-  transition: color 0.5s;
-  text-align: center;
-}
+#mood-text { font-size: 1.2em; margin-top: 8px; transition: color 0.5s; text-align: center; }
 
 footer {
-  background: #2b2b3b;
-  display: flex;
-  justify-content: space-around;
-  padding: 12px 0;
-  box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
+  background: #2b2b3b; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
 }
+footer button { flex: 1; margin: 0 5px; font-size: 1em; transition: transform 0.2s, background 0.3s; }
+footer button:hover { transform: translateY(-2px); }
 
-footer button {
-  flex: 1;
-  margin: 0 5px;
-  font-size: 1em;
-  transition: transform 0.2s, background 0.3s;
-}
+section { display: none; width: 100%; max-width: 600px; }
+section.active { display: block; animation: fadeIn 0.5s ease-in-out; }
 
-footer button:hover {
-  transform: translateY(-2px);
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-section {
-  display: none;
-  width: 100%;
-  max-width: 600px;
-}
-
-section.active {
-  display: block;
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-  color: white;
-  font-size: 0.9em;
-}
-
-th, td {
-  padding: 8px;
-  border: 1px solid #fff;
-  text-align: center;
-}
-
-th {
-  background-color: #ff6ec4;
-  color: white;
-}
-
-td {
-  background-color: rgba(255,255,255,0.1);
-}
-
-/* Медиа-запросы для адаптации */
-@media (min-width: 768px) {
-  h1 { font-size: 2.2em; }
-  #power-container { height: 40px; }
-  .stats div { font-size: 1.2em; padding: 10px 15px; }
-  button { font-size: 1.1em; padding: 12px 30px; }
-}
-
-@media (min-width: 1024px) {
-  h1 { font-size: 2.5em; }
-  #power-container { height: 45px; }
-  .stats div { font-size: 1.3em; padding: 12px 20px; }
-  button { font-size: 1.2em; padding: 15px 35px; }
-}
+table { width: 100%; border-collapse: collapse; margin-top: 15px; color: white; font-size: 0.9em; }
+th, td { padding: 8px; border: 1px solid #fff; text-align: center; }
+th { background-color: #ff6ec4; color: white; }
+td { background-color: rgba(255,255,255,0.1); }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>🔥 Потужнометр 🔥</h1>
-</header>
+<header><h1>🔥 Потужнометр 🔥</h1></header>
 
 <main>
-  <!-- Раздел Потужнометр -->
-  <section id="game-section" class="active">
-    <div id="power-container">
-      <div id="power-bar"></div>
-    </div>
-    <div class="stats">
-      <div>Результат: <span id="power-value">0</span></div>
-      <div>Очки: <span id="points-value">0</span></div>
-      <div>Енергія: <span id="energy-value">50</span></div>
-    </div>
-    <div id="mood-text">Я сумний 😔</div>
-    <button onclick="measurePower()">Виміряти потужність</button>
-    <button onclick="upgrade('energy')">Прокачати енергію (10 очок)</button>
-  </section>
+<!-- Раздел Гра -->
+<section id="game-section" class="active">
+  <div id="power-container"><div id="power-bar"></div></div>
+  <div class="stats">
+    <div>Результат: <span id="power-value">0</span></div>
+    <div>Очки: <span id="points-value">0</span></div>
+    <div>Енергія: <span id="energy-value">50</span></div>
+  </div>
+  <div id="mood-text">Я сумний 😔</div>
+  <button id="measure-btn" onclick="measurePower()">Виміряти потужність</button>
+  <button onclick="upgrade('energy')">Прокачати енергію (10 очок)</button>
+</section>
 
-  <!-- Раздел Магазин -->
-  <section id="shop-section">
-    <h2>Магазин</h2>
-    <p>Тут можна купити різні бонуси або косметику для персонажа.</p>
-    <button onclick="alert('Магазин буде додано пізніше!')">Купити бонус</button>
-  </section>
+<!-- Раздел Магазин -->
+<section id="shop-section">
+  <h2>Магазин</h2>
+  <p>Тут можна купити бонуси або покращення за очки.</p>
+  <button onclick="buyItem('bonus1',5)">Купити бонус 1 (5 очок)</button>
+  <button onclick="buyItem('bonus2',10)">Купити бонус 2 (10 очок)</button>
+</section>
 
-  <!-- Раздел Статистика -->
-  <section id="stats-section">
-    <h2>Статистика</h2>
-    <div id="high-score">Найвищий результат: <span id="high-score-value">0</span></div>
-
-    <h3>Таблиця лідерів</h3>
-    <table id="leaderboard">
-      <thead>
-        <tr>
-          <th>Місце</th>
-          <th>Ім'я</th>
-          <th>Очки</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Здесь будут лидеры -->
-      </tbody>
-    </table>
-  </section>
+<!-- Раздел Статистика -->
+<section id="stats-section">
+  <h2>Статистика</h2>
+  <div id="high-score">Найвищий результат: <span id="high-score-value">0</span></div>
+  <h3>Таблиця лідерів</h3>
+  <table id="leaderboard">
+    <thead><tr><th>Місце</th><th>Ім'я</th><th>Очки</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
 </main>
 
 <footer>
@@ -231,14 +104,18 @@ td {
   <button onclick="switchSection('stats-section')">Статистика</button>
 </footer>
 
-<!-- Telegram Web App SDK должен быть подключен автоматически при запуске через Telegram -->
 <script>
+// Данные игрока
 let points = parseInt(localStorage.getItem("points")) || 0;
 let energy = parseInt(localStorage.getItem("energy")) || 50;
 let highScore = parseInt(localStorage.getItem("highScore")) || 0;
 let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
 
-// Получаем имя пользователя из Telegram
+// Ограничение кнопки
+let measureCount = 0;
+let lastReset = Date.now();
+
+// Имя пользователя Telegram
 const tg = window.Telegram?.WebApp;
 const username = tg?.initDataUnsafe?.user?.username || tg?.initDataUnsafe?.user?.first_name || "Гравець";
 
@@ -246,102 +123,118 @@ document.getElementById("points-value").innerText = points;
 document.getElementById("energy-value").innerText = energy;
 document.getElementById("high-score-value").innerText = highScore;
 
-function animateValue(id, start, end, duration) {
+// Анимация числа
+function animateValue(id, start, end, duration){
   let range = end - start;
   let current = start;
-  let increment = range / (duration / 20);
+  let increment = range / (duration/20);
   let obj = document.getElementById(id);
-  let timer = setInterval(() => {
+  let timer = setInterval(()=>{
     current += increment;
-    if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
-      current = end;
-      clearInterval(timer);
-    }
-    obj.innerText = Math.floor(current);
-  }, 20);
+    if((increment>0 && current>=end)||(increment<0 && current<=end)){ current=end; clearInterval(timer);}
+    obj.innerText=Math.floor(current);
+  },20);
 }
 
-function measurePower() {
-  const value = Math.floor(Math.random() * 9999) + 1;
+// Логика измерения мощности
+function measurePower(){
+  // Проверка лимита
+  const now = Date.now();
+  if(now - lastReset > 5*60*1000){ measureCount=0; lastReset=now; }
+  if(measureCount>=10){ alert("Можна вимірювати не більше 10 разів кожні 5 хвилин!"); return; }
+  measureCount++;
+
+  const value = Math.floor(Math.random()*9999)+1;
   const bar = document.getElementById("power-bar");
-  const percent = Math.min(value / 9999 * 100, 100);
-  bar.style.width = percent + "%";
+  const percent = Math.min(value/9999*100,100);
+  bar.style.width=percent+"%";
 
-  if(value < 1000) bar.style.background = "#00ffd5";
-  else if(value < 5000) bar.style.background = "#ffe600";
-  else if(value < 9000) bar.style.background = "#ff6ec4";
-  else bar.style.background = "#ff3c3c";
+  if(value<1000) bar.style.background="#00ffd5";
+  else if(value<5000) bar.style.background="#ffe600";
+  else if(value<9000) bar.style.background="#ff6ec4";
+  else bar.style.background="#ff3c3c";
 
-  animateValue("power-value", 0, value, 1000);
+  animateValue("power-value",0,value,1000);
 
-  const earnedPoints = Math.floor(value / 100);
+  const earnedPoints = Math.floor(value/100);
   points += earnedPoints;
-  document.getElementById("points-value").innerText = points;
+  document.getElementById("points-value").innerText=points;
 
-  if(value > highScore){
-    highScore = value;
-    document.getElementById("high-score-value").innerText = highScore;
-    localStorage.setItem("highScore", highScore);
+  if(value>highScore){
+    highScore=value;
+    document.getElementById("high-score-value").innerText=highScore;
+    localStorage.setItem("highScore",highScore);
   }
 
-  localStorage.setItem("points", points);
-  localStorage.setItem("energy", energy);
+  localStorage.setItem("points",points);
+  localStorage.setItem("energy",energy);
 
   addToLeaderboard(points);
   updateMood();
 }
 
-function upgrade(type){
-  if(points < 10){ alert("Недостатньо очок!"); return; }
-  points -= 10;
-  localStorage.setItem("points", points);
-  document.getElementById("points-value").innerText = points;
+// Логика магазина
+function buyItem(item,cost){
+  if(points<cost){ alert("Недостатньо очок!"); return; }
+  points -= cost;
+  localStorage.setItem("points",points);
+  document.getElementById("points-value").innerText=points;
 
-  if(type === 'energy'){
-    energy += 10;
-    energy = Math.min(100, energy);
-    localStorage.setItem("energy", energy);
-    document.getElementById("energy-value").innerText = energy;
-  }
+  if(item==='bonus1'){ energy +=5; energy=Math.min(100,energy); localStorage.setItem("energy",energy); document.getElementById("energy-value").innerText=energy; }
+  if(item==='bonus2'){ energy +=10; energy=Math.min(100,energy); localStorage.setItem("energy",energy); document.getElementById("energy-value").innerText=energy; }
 
   updateMood();
 }
 
+// Прокачка энергии
+function upgrade(type){
+  if(points<10){ alert("Недостатньо очок!"); return; }
+  points-=10;
+  localStorage.setItem("points",points);
+  document.getElementById("points-value").innerText=points;
+
+  if(type==='energy'){ energy+=10; energy=Math.min(100,energy); localStorage.setItem("energy",energy); document.getElementById("energy-value").innerText=energy; }
+
+  updateMood();
+}
+
+// Обновление настроения
 function updateMood(){
-  const moodText = document.getElementById("mood-text");
-  if(energy < 30) moodText.innerText = "Я сумний 😔";
-  else if(energy < 70) moodText.innerText = "Я щасливий 🙂";
-  else moodText.innerText = "Я дуже щасливий 😄";
+  const moodText=document.getElementById("mood-text");
+  if(energy<30) moodText.innerText="Я сумний 😔";
+  else if(energy<70) moodText.innerText="Я щасливий 🙂";
+  else moodText.innerText="Я дуже щасливий 😄";
 }
 
-function switchSection(sectionId){
-  document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-  document.getElementById(sectionId).classList.add('active');
-  if(sectionId === 'stats-section') renderLeaderboard();
-}
-
+// Таблица лидеров
 function addToLeaderboard(score){
-  leaderboard.push({name: username, score: score});
-  leaderboard.sort((a,b) => b.score - a.score);
-  leaderboard = leaderboard.slice(0,10);
-  localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+  leaderboard.push({name:username,score:score});
+  leaderboard.sort((a,b)=>b.score-a.score);
+  leaderboard=leaderboard.slice(0,10);
+  localStorage.setItem("leaderboard",JSON.stringify(leaderboard));
   renderLeaderboard();
 }
 
 function renderLeaderboard(){
-  const tbody = document.getElementById("leaderboard").querySelector("tbody");
-  tbody.innerHTML = "";
+  const tbody=document.getElementById("leaderboard").querySelector("tbody");
+  tbody.innerHTML="";
   leaderboard.forEach((item,index)=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${index+1}</td><td>${item.name}</td><td>${item.score}</td>`;
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${index+1}</td><td>${item.name}</td><td>${item.score}</td>`;
     tbody.appendChild(tr);
   });
+}
+
+// Переключение разделов
+function switchSection(sectionId){
+  document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
+  document.getElementById(sectionId).classList.add('active');
+  if(sectionId==='stats-section') renderLeaderboard();
 }
 
 // Инициализация
 updateMood();
 renderLeaderboard();
 </script>
-
 </body>
 </html>
