@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Потужнометр</title>
 <style>
 body {
@@ -13,6 +13,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  touch-action: manipulation;
 }
 
 header {
@@ -30,7 +31,6 @@ main {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  transition: all 0.5s;
 }
 
 #power-container {
@@ -63,12 +63,12 @@ main {
   padding: 10px 20px;
   background: rgba(255,255,255,0.05);
   border-radius: 15px;
-  transition: 0.3s;
+  transition: transform 0.2s, background 0.3s;
 }
 
 .stats div:hover {
-  background: rgba(255,255,255,0.15);
   transform: scale(1.05);
+  background: rgba(255,255,255,0.15);
 }
 
 button {
@@ -90,24 +90,10 @@ button:hover {
   box-shadow: 0 0 20px #ffaa00;
 }
 
-#sketchfab-container {
-  width: 400px;
-  height: 400px;
-  margin: 20px auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: transform 0.3s;
-}
-
-#sketchfab-frame {
-  width: 100%;
-  height: 100%;
-}
-
 #mood-text {
   font-size: 1.5em;
   margin-top: 10px;
+  transition: color 0.5s;
 }
 
 footer {
@@ -121,10 +107,18 @@ footer {
 footer button {
   flex: 1;
   margin: 0 5px;
+  transition: background 0.3s, transform 0.2s;
+}
+
+footer button:hover {
+  background: #ffaa00;
+  transform: translateY(-2px);
 }
 
 section {
   display: none;
+  width: 100%;
+  max-width: 600px;
 }
 
 section.active {
@@ -136,12 +130,34 @@ section.active {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  color: white;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #fff;
+  text-align: center;
+}
+
+th {
+  background-color: #ffcc00;
+  color: black;
+}
+
+td {
+  background-color: rgba(255,255,255,0.1);
+}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🔥 Потужнометр + 3D Персонаж 🔥</h1>
+  <h1>🔥 Потужнометр 🔥</h1>
 </header>
 
 <main>
@@ -154,13 +170,6 @@ section.active {
       <div>Результат: <span id="power-value">0</span></div>
       <div>Очки: <span id="points-value">0</span></div>
       <div>Енергія: <span id="energy-value">50</span></div>
-    </div>
-    <div id="sketchfab-container">
-      <iframe id="sketchfab-frame" title="Ukrainian Soldier" frameborder="0" allowfullscreen
-        mozallowfullscreen="true" webkitallowfullscreen="true"
-        allow="autoplay; fullscreen; xr-spatial-tracking"
-        src="https://sketchfab.com/models/94f74f6bdd994733a8a40c7ff088e12f/embed">
-      </iframe>
     </div>
     <div id="mood-text">Я сумний 😔</div>
     <button onclick="measurePower()">Виміряти потужність</button>
@@ -177,8 +186,21 @@ section.active {
   <!-- Раздел Статистика -->
   <section id="stats-section">
     <h2>Статистика</h2>
-    <p>Пройдено ігор, найвищий результат та накопичені очки.</p>
     <div id="high-score">Найвищий результат: <span id="high-score-value">0</span></div>
+
+    <h3>Таблиця лідерів</h3>
+    <table id="leaderboard">
+      <thead>
+        <tr>
+          <th>Місце</th>
+          <th>Ім'я</th>
+          <th>Очки</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Здесь будут лидеры -->
+      </tbody>
+    </table>
   </section>
 </main>
 
@@ -192,6 +214,9 @@ section.active {
 let points = parseInt(localStorage.getItem("points")) || 0;
 let energy = parseInt(localStorage.getItem("energy")) || 50;
 let highScore = parseInt(localStorage.getItem("highScore")) || 0;
+
+// Таблица лидеров
+let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
 
 document.getElementById("points-value").innerText = points;
 document.getElementById("energy-value").innerText = energy;
@@ -221,12 +246,7 @@ function measurePower() {
   if(value < 1000) bar.style.background = "green";
   else if(value < 5000) bar.style.background = "yellow";
   else if(value < 9000) bar.style.background = "orange";
-  else {
-    bar.style.background = "red";
-    const frame = document.getElementById("sketchfab-frame");
-    frame.style.transform = "scale(1.05)";
-    setTimeout(()=> frame.style.transform = "scale(1)", 500);
-  }
+  else bar.style.background = "red";
 
   animateValue("power-value", 0, value, 1000);
 
@@ -242,6 +262,8 @@ function measurePower() {
 
   localStorage.setItem("points", points);
   localStorage.setItem("energy", energy);
+
+  addToLeaderboard(prompt("Введіть своє ім'я:"), points);
   updateMood();
 }
 
@@ -256,9 +278,6 @@ function upgrade(type){
     energy = Math.min(100, energy);
     localStorage.setItem("energy", energy);
     document.getElementById("energy-value").innerText = energy;
-    const frame = document.getElementById("sketchfab-frame");
-    frame.style.transform = "translateY(-10px)";
-    setTimeout(()=> frame.style.transform="translateY(0)", 300);
   }
 
   updateMood();
@@ -274,10 +293,31 @@ function updateMood(){
 function switchSection(sectionId){
   document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
   document.getElementById(sectionId).classList.add('active');
+  if(sectionId === 'stats-section') renderLeaderboard();
+}
+
+// Таблица лидеров
+function addToLeaderboard(name, score){
+  if(!name) name = "Гравець";
+  leaderboard.push({name: name, score: score});
+  leaderboard.sort((a,b) => b.score - a.score);
+  leaderboard = leaderboard.slice(0,10); // максимум 10 игроков
+  localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+}
+
+function renderLeaderboard(){
+  const tbody = document.getElementById("leaderboard").querySelector("tbody");
+  tbody.innerHTML = "";
+  leaderboard.forEach((item,index)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${index+1}</td><td>${item.name}</td><td>${item.score}</td>`;
+    tbody.appendChild(tr);
+  });
 }
 
 // Инициализация
 updateMood();
+renderLeaderboard();
 </script>
 
 </body>
