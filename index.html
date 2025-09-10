@@ -3,32 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Потужнометр</title>
+<title>Потужнометр + Прокачка персонажа</title>
 <style>
 body {
   font-family: Arial, sans-serif;
   background: linear-gradient(to bottom, #0d1b2a, #1b263b);
   color: white;
   text-align: center;
-  padding: 50px 20px;
+  padding: 30px 20px;
 }
-
-h1 {
-  font-size: 2.5em;
-  margin-bottom: 30px;
-  text-shadow: 0 0 10px #ffcc00;
-}
+h1 { font-size: 2.5em; margin-bottom: 20px; text-shadow: 0 0 10px #ffcc00; }
 
 #power-container {
   width: 80%;
-  margin: 0 auto 20px;
+  margin: 20px auto;
   height: 40px;
   background: #333;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 0 20px #000 inset;
 }
-
 #power-bar {
   height: 100%;
   width: 0%;
@@ -37,99 +31,143 @@ h1 {
   transition: width 1s, background 1s;
 }
 
-#power-value {
-  margin-top: 20px;
-  font-size: 2em;
-  font-weight: bold;
-}
-
-#power-text {
-  margin-top: 10px;
-  font-size: 1.5em;
-  min-height: 30px;
+#power-value, #points-value, #energy-value, #mood-text {
+  font-size: 1.8em;
+  margin: 10px 0;
 }
 
 button {
   background: #ffcc00;
   color: black;
   border: none;
-  padding: 15px 35px;
-  font-size: 1.3em;
+  padding: 12px 30px;
+  font-size: 1.2em;
   border-radius: 12px;
   cursor: pointer;
-  transition: 0.3s;
+  margin: 5px;
   box-shadow: 0 0 10px #ffcc00;
-  margin-top: 30px;
+  transition: 0.3s;
 }
+button:hover { background: #ffaa00; }
 
-button:hover {
-  background: #ffaa00;
-}
+#tom { width: 200px; margin: 20px; }
 
-#footer-text {
-  margin-top:50px;
-  font-size:1em;
-  color:#ccc;
-}
-
-#footer-text a {
-  color:#ffcc00;
-  text-decoration:none;
+/* Ефект блиску для максимального бару */
+@keyframes blink {
+  0%,100% { box-shadow: 0 0 20px red; }
+  50% { box-shadow: 0 0 40px yellow; }
 }
 </style>
 </head>
 <body>
 
-<h1>🔥 Потужнометр 🔥</h1>
+<h1>🔥 Потужнометр + Прокачка персонажа 🔥</h1>
 
-<div id="power-container">
-  <div id="power-bar"></div>
-</div>
+<div id="power-container"><div id="power-bar"></div></div>
+<div>Результат: <span id="power-value">0</span></div>
+<div>Очки: <span id="points-value">0</span></div>
 
-<div id="power-value">0</div>
-<div id="power-text"></div>
+<img id="tom" src="https://i.imgur.com/3s5c8I0.png">
+<div id="mood-text">Я сумний 😔</div>
+<div>Енергія персонажа: <span id="energy-value">50</span></div>
 
 <button onclick="measurePower()">Виміряти потужність</button>
-
-<div id="footer-text">
-  реклама: <a href=https://kadet.kh.ua/" target="_blank">Всупай до Державного ліцею з посиленою військово-фізичною підготовкою «Слобожанський»</a>
-</div>
+<button onclick="upgrade('energy')">Прокачати енергію (10 очок)</button>
 
 <audio id="sound-high" src="https://www.soundjay.com/button/beep-07.mp3"></audio>
 <audio id="sound-max" src="https://www.soundjay.com/button/button-3.mp3"></audio>
 
 <script>
+// Завантаження прогресу
+let points = parseInt(localStorage.getItem("points")) || 0;
+let energy = parseInt(localStorage.getItem("energy")) || 50;
+
+document.getElementById("points-value").innerText = points;
+document.getElementById("energy-value").innerText = energy;
+
+// Анімація числа
+function animateValue(id, start, end, duration) {
+  let range = end - start;
+  let current = start;
+  let increment = range / (duration / 20);
+  let obj = document.getElementById(id);
+  let timer = setInterval(() => {
+    current += increment;
+    if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+      current = end;
+      clearInterval(timer);
+    }
+    obj.innerText = Math.floor(current);
+  }, 20);
+}
+
+// Вимір потужності
 function measurePower() {
   const value = Math.floor(Math.random() * 9999) + 1;
   const bar = document.getElementById("power-bar");
   const percent = Math.min(value / 9999 * 100, 100);
   bar.style.width = percent + "%";
 
-  // Змінюємо колір шкали
-  if (value < 1000) {
-    bar.style.background = "green";
-  } else if (value < 5000) {
-    bar.style.background = "yellow";
-  } else if (value < 9000) {
+  const highSound = document.getElementById("sound-high");
+  const maxSound = document.getElementById("sound-max");
+  bar.style.animation = "";
+
+  if(value < 1000) bar.style.background = "green";
+  else if(value < 5000) bar.style.background = "yellow";
+  else if(value < 9000) {
     bar.style.background = "orange";
-    document.getElementById("sound-high").play();
+    highSound.play();
   } else {
     bar.style.background = "red";
-    document.getElementById("sound-max").play();
+    maxSound.play();
+    bar.style.animation = "blink 1s infinite";
   }
 
-  // Відображаємо цифрове значення
-  document.getElementById("power-value").innerText = value;
+  animateValue("power-value", 0, value, 1000);
 
-  // Мемний підпис
-  let text = "";
-  if (value < 1000) text = "Слабачок 💧";
-  else if (value < 5000) text = "Середня потужність ⚡";
-  else if (value < 9000) text = "Дуже потужний 🔥";
-  else text = "Потужний як атом 💥";
+  // Додаємо очки
+  const earnedPoints = Math.floor(value / 100);
+  points += earnedPoints;
+  document.getElementById("points-value").innerText = points;
 
-  document.getElementById("power-text").innerText = text;
+  // Зберігаємо прогрес
+  localStorage.setItem("points", points);
+  localStorage.setItem("energy", energy);
+
+  // Оновлення настрою персонажа
+  updateMood();
 }
+
+// Прокачка персонажа
+function upgrade(type) {
+  if(points < 10){
+    alert("Недостатньо очок!");
+    return;
+  }
+  points -= 10;
+  if(type === 'energy'){
+    energy += 10;
+    energy = Math.min(100, energy);
+    document.getElementById("energy-value").innerText = energy;
+    alert("Енергія персонажа збільшена!");
+  }
+
+  document.getElementById("points-value").innerText = points;
+  localStorage.setItem("points", points);
+  localStorage.setItem("energy", energy);
+  updateMood();
+}
+
+// Змінюємо настрій персонажа залежно від енергії
+function updateMood() {
+  const moodText = document.getElementById("mood-text");
+  if(energy < 30) moodText.innerText = "Я сумний 😔";
+  else if(energy < 70) moodText.innerText = "Я щасливий 🙂";
+  else moodText.innerText = "Я дуже щасливий 😄";
+}
+
+// Ініціалізація настрою при завантаженні
+updateMood();
 </script>
 
 </body>
