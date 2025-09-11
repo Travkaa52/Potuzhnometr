@@ -12,21 +12,36 @@
   <!-- Главное меню -->
   <div id="menu">
     <h1>Виберіть мемометр</h1>
-    <button class="menu-btn" data-meter="1">Потужнометр</button>
-    <button class="menu-btn" data-meter="2">зрадометр</button>
+    <button class="menu-btn" data-meter="1">Манометр</button>
+    <button class="menu-btn" data-meter="2">Мемометр</button>
   </div>
 
   <!-- Экран измерения -->
   <div id="meter-screen" style="display:none;">
     <div id="meter-container">
-      <div id="meter-circle">
-        <div id="meter-pointer"></div>
-      </div>
+      <svg id="meter-svg" width="300" height="160">
+        <defs>
+          <linearGradient id="meter-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#0f0"/>
+            <stop offset="50%" stop-color="#ff0"/>
+            <stop offset="100%" stop-color="#f00"/>
+          </linearGradient>
+        </defs>
+        <path id="meter-arc" stroke="url(#meter-gradient)" stroke-width="15" fill="none" stroke-linecap="round"/>
+        <g id="ticks"></g>
+        <g id="numbers"></g>
+        <line id="pointer" x1="150" y1="150" x2="150" y2="30" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+      </svg>
     </div>
 
     <button id="measureBtn">Виміряти потужність</button>
     <div id="result"></div>
     <button id="backBtn">Назад</button>
+
+    <!-- Низ интерфейса с текстом и ссылкой -->
+    <div id="footer-text">
+      Перейти на <a href="https://example.com" target="_blank">наш сайт</a> для додаткової інформації
+    </div>
   </div>
 
 </div>
