@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const radius = 120;
   const totalTicks = 20;
 
-  // Построение 360° шкалы с делениями и цифрами
   function buildScale() {
     ticksGroup.innerHTML = '';
     numbersGroup.innerHTML = '';
@@ -38,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const cosA = Math.cos(angle);
       const sinA = Math.sin(angle);
 
-      // Деления
       const x1 = centerX + cosA * (radius - 6);
       const y1 = centerY + sinA * (radius - 6);
       const x2 = centerX + cosA * (radius + 6);
@@ -53,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
       tick.setAttribute('stroke-width', i % 5 === 0 ? 3 : 1.5);
       ticksGroup.appendChild(tick);
 
-      // Цифры
       const numberX = centerX + cosA*(radius+22);
       const numberY = centerY + sinA*(radius+22);
       const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -110,19 +107,20 @@ document.addEventListener('DOMContentLoaded', () => {
     explosionGif.classList.remove('show');
   });
 
-  function getRandomPower(){ return Math.floor(Math.random()*101); }
-  function movePointerByPower(power){ setPointerDeg(power/100*360); }
+  function getRandomPowerAligned() {
+    const tick = Math.floor(Math.random()*(totalTicks+1));
+    return tick*(100/totalTicks);
+  }
 
   measureBtn.addEventListener('click', ()=>{
-    const power = getRandomPower();
-    movePointerByPower(power);
+    const power = getRandomPowerAligned();
+    const deg = power/100*360;
+    setPointerDeg(deg);
     playRandomSoundForMeter(currentMeter);
 
-    if(currentMeter===1) resultDiv.textContent=`Потужність: ${power}%`;
-    else resultDiv.textContent=`Рівень зради: ${power}%`;
+    resultDiv.textContent = currentMeter===1 ? `Потужність: ${Math.round(power)}%` : `Рівень зради: ${Math.round(power)}%`;
 
     if(power >= 90){
-      // Превью на 2 секунды с звуком boo
       previewImg.classList.add('show');
       const previewSound = new Audio('sounds/boo.mp3');
       previewSound.play().catch(()=>{});
@@ -130,17 +128,13 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(()=>{
         previewImg.classList.remove('show');
 
-        // Взрыв на 2 секунды с звуком explosion
         explosionGif.classList.add('show');
         const explosionSound = new Audio('sounds/explosion.mp3');
         explosionSound.play().catch(()=>{});
 
-        setTimeout(()=>{
-          explosionGif.classList.remove('show');
-        }, 2000);
+        setTimeout(()=>{ explosionGif.classList.remove('show'); },2000);
 
-      }, 2000);
-
+      },2000);
     } else {
       previewImg.classList.remove('show');
       explosionGif.classList.remove('show');
