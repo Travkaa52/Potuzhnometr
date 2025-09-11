@@ -27,23 +27,23 @@ const meterColors = {
 const centerX = 150;
 const centerY = 150;
 const radius = 120;
-const totalTicks = 10;
+const totalTicks = 20;
 
-// Построение делений и цифр
+// Построение делений и цифр 360°
 function buildScale() {
   ticksGroup.innerHTML = '';
   numbersGroup.innerHTML = '';
 
   for (let i = 0; i <= totalTicks; i++) {
-    const angle = Math.PI * i / totalTicks; // 0-180°
+    const angle = 2 * Math.PI * i / totalTicks;
     const cosA = Math.cos(angle);
     const sinA = Math.sin(angle);
 
     // Деления
     const x1 = centerX + cosA * (radius - 5);
-    const y1 = centerY - sinA * (radius - 5);
+    const y1 = centerY + sinA * (radius - 5);
     const x2 = centerX + cosA * (radius + 5);
-    const y2 = centerY - sinA * (radius + 5);
+    const y2 = centerY + sinA * (radius + 5);
 
     const line = document.createElementNS("http://www.w3.org/2000/svg","line");
     line.setAttribute("x1", x1);
@@ -56,13 +56,14 @@ function buildScale() {
 
     // Цифры
     const numberX = centerX + cosA * (radius + 20);
-    const numberY = centerY - sinA * (radius + 20);
+    const numberY = centerY + sinA * (radius + 20);
 
     const text = document.createElementNS("http://www.w3.org/2000/svg","text");
     text.setAttribute("x", numberX);
     text.setAttribute("y", numberY + 5);
     text.setAttribute("text-anchor", "middle");
-    text.textContent = i * 10;
+    text.setAttribute("alignment-baseline", "middle");
+    text.textContent = Math.round(i * (100/totalTicks));
     numbersGroup.appendChild(text);
   }
 }
@@ -72,12 +73,11 @@ function openMeter(meterId) {
   currentMeter = meterId;
   const colors = meterColors[currentMeter];
 
-  // Обновляем градиент
   gradient.children[0].setAttribute('stop-color', colors[0]);
   gradient.children[1].setAttribute('stop-color', colors[1]);
   gradient.children[2].setAttribute('stop-color', colors[2]);
 
-  pointer.style.transform = 'rotate(0deg)';
+  pointer.style.transform = 'rotate(0rad)';
   resultDiv.textContent = '';
 
   menu.style.display = 'none';
@@ -92,13 +92,13 @@ backBtn.addEventListener('click', () => {
 
 // Генерация случайного процента мощности
 function getRandomPower() {
-  return Math.floor(Math.random() * 101); // 0-100%
+  return Math.floor(Math.random() * 101);
 }
 
-// Движение стрелки по шкале
+// Движение стрелки
 function movePointer(power) {
-  const angle = power / 100 * 180; // 0-180°
-  pointer.style.transform = `rotate(${angle}deg)`;
+  const angle = 2 * Math.PI * power / 100;
+  pointer.style.transform = `rotate(${angle}rad)`;
 }
 
 // Проигрывание случайного звука
@@ -116,16 +116,4 @@ measureBtn.addEventListener('click', () => {
   playRandomSound();
 
   if (power < 30) resultDiv.textContent = `Потужність слабка: ${power}% 💧`;
-  else if (power < 70) resultDiv.textContent = `Потужність середня: ${power}% ⚡`;
-  else resultDiv.textContent = `Потужність максимальна: ${power}% 🔥`;
-});
-
-// Привязка кнопок меню
-document.querySelectorAll('.menu-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    openMeter(parseInt(btn.dataset.meter));
-  });
-});
-
-// Построение шкалы при загрузке страницы
-buildScale();
+  else if (power < 70) resultDiv.text
