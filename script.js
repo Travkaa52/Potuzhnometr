@@ -37,21 +37,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const cosA = Math.cos(angle);
       const sinA = Math.sin(angle);
 
-      // деления
+      // Деления
       const x1 = centerX + cosA * (radius - 6);
       const y1 = centerY + sinA * (radius - 6);
       const x2 = centerX + cosA * (radius + 6);
       const y2 = centerY + sinA * (radius + 6);
+
       const tick = document.createElementNS('http://www.w3.org/2000/svg','line');
       tick.setAttribute('x1', x1);
       tick.setAttribute('y1', y1);
       tick.setAttribute('x2', x2);
       tick.setAttribute('y2', y2);
       tick.setAttribute('stroke', '#fff');
-      tick.setAttribute('stroke-width', i%5===0?3:1.5);
+      tick.setAttribute('stroke-width', i % 5 === 0 ? 3 : 1.5);
       ticksGroup.appendChild(tick);
 
-      // цифры
+      // Цифры
       const numberX = centerX + cosA*(radius+22);
       const numberY = centerY + sinA*(radius+22);
       const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -71,10 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function applyGradientForMeter(meterId) {
     const stops = gradient.querySelectorAll('stop');
     const colors = meterColors[meterId] || meterColors[1];
-    if(stops.length>=3){
-      stops[0].setAttribute('stop-color',colors[0]);
-      stops[1].setAttribute('stop-color',colors[1]);
-      stops[2].setAttribute('stop-color',colors[2]);
+    if(stops.length >= 3){
+      stops[0].setAttribute('stop-color', colors[0]);
+      stops[1].setAttribute('stop-color', colors[1]);
+      stops[2].setAttribute('stop-color', colors[2]);
     }
   }
 
@@ -104,14 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
   backBtn.addEventListener('click',()=>{
     meterScreen.style.display='none';
     menu.style.display='block';
-    previewImg.style.display='none';
-    explosionGif.style.display='none';
+    previewImg.classList.remove('show');
+    explosionGif.classList.remove('show');
   });
 
   function getRandomPower(){ return Math.floor(Math.random()*101); }
   function movePointerByPower(power){ setPointerDeg(power/100*360); }
 
-  measureBtn.addEventListener('click',()=>{
+  measureBtn.addEventListener('click', ()=>{
     const power = getRandomPower();
     movePointerByPower(power);
     playRandomSoundForMeter(currentMeter);
@@ -119,16 +120,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if(currentMeter===1) resultDiv.textContent=`Потужність: ${power}%`;
     else resultDiv.textContent=`Рівень зради: ${power}%`;
 
-    if(power>=90){
-      previewImg.style.display='block';
+    if(power >= 90){
+      // Показываем превью на 2 секунды
+      previewImg.classList.add('show');
       setTimeout(()=>{
-        previewImg.style.display='none';
-        explosionGif.style.display='block';
-        setTimeout(()=>explosionGif.style.display='none',1500);
-      },800);
+        previewImg.classList.remove('show');
+        // Показываем взрыв на 2 секунды
+        explosionGif.classList.add('show');
+        setTimeout(()=>{
+          explosionGif.classList.remove('show');
+        }, 2000);
+      }, 2000);
     } else {
-      previewImg.style.display='none';
-      explosionGif.style.display='none';
+      previewImg.classList.remove('show');
+      explosionGif.classList.remove('show');
     }
   });
 
