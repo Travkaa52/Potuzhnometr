@@ -10,9 +10,7 @@ body {
   flex-direction: column;
 }
 
-#app {
-  text-align: center;
-}
+#app { text-align: center; }
 
 #meter-container {
   width: 300px;
