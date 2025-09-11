@@ -30,11 +30,8 @@ section.active { display: block; }
 button.action-btn { margin-top: 20px; padding: 10px 20px; font-size: 1em; border-radius: 8px; border: none; cursor: pointer; background: #ff6f61; color: white; transition: 0.3s; }
 button.action-btn:hover { background: #ff3b2e; }
 
-#cat-container img { width: 150px; height: 150px; margin-top: 20px; }
-
 .skin-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
-.skin { cursor: pointer; text-align: center; }
-.skin img { width: 80px; height: 80px; border: 2px solid #fff; border-radius: 8px; }
+.skin { cursor: pointer; text-align: center; padding:5px; border:1px solid #fff; border-radius:5px; }
 
 table { margin: 0 auto; border-collapse: collapse; width: 90%; max-width: 600px; }
 table, th, td { border: 1px solid #fff; }
@@ -67,9 +64,6 @@ th, td { padding: 8px; text-align: center; }
   <div id="power-value">0</div>
   <div id="power-text"></div>
   <button id="measure-btn" class="action-btn">Виміряти потужність</button>
-  <div id="cat-container">
-    <img id="cat-img" src="skins/cool.png" alt="Кіт" onerror="this.src='skins/cool.png'">
-  </div>
 </section>
 
 <!-- Магазин -->
@@ -106,24 +100,18 @@ function showSection(section) {
   document.getElementById(section).classList.add('active');
 }
 
-// Скины
-const skins = [
-  "Gemini_Generated_Image_5nszyk5nszyk5nsz.png",
-  "Gemini_Generated_Image_kuuk4dkuuk4dkuuk.png",
-  "Gemini_Generated_Image_mwuup6mwuup6mwuu.png",
-  "Gemini_Generated_Image_n8rum0n8rum0n8ru.png",
-  "cool.png"
-];
+// Скины (только текст)
+const skins = ["cool","skin1","skin2","skin3","skin4"];
 const shopContainer = document.getElementById('shop-container');
 skins.forEach(skin=>{
   const div=document.createElement('div');
   div.className='skin';
-  div.innerHTML=`<img src="skins/${skin}" alt="${skin}"><p>${skin.split('.')[0]}</p>`;
+  div.innerText=skin;
   div.onclick=()=>selectSkin(skin);
   shopContainer.appendChild(div);
 });
 function selectSkin(skin){
-  document.getElementById('cat-img').src='skins/'+skin;
+  alert('Выбрано: ' + skin);
   localStorage.setItem('selectedSkin',skin);
 }
 
@@ -183,3 +171,33 @@ measureBtn.addEventListener('click',()=>{
   if(idx>=0) leaderboard[idx].points=points;
   else leaderboard.push({name:username,points});
   localStorage.setItem('leaderboard',JSON.stringify(leaderboard));
+  updateLeaderboard();
+});
+
+// Металошукач через акселерометр
+let lastAccel={x:0,y:0,z:0};
+let metalPoints=0;
+if(window.DeviceMotionEvent){
+  window.addEventListener('devicemotion',event=>{
+    const a=event.accelerationIncludingGravity;
+    if(!a) return;
+    const delta=Math.sqrt((a.x-lastAccel.x)**2 + (a.y-lastAccel.y)**2 + (a.z-lastAccel.z)**2);
+    lastAccel={x:a.x,y:a.y,z:a.z};
+    const percent=Math.min(delta*10,100);
+    document.getElementById('motion-bar').style.width=percent+"%";
+    document.getElementById('motion-value').innerText="Сила руху: "+delta.toFixed(2);
+    if(delta>1.5){
+      metalPoints+=Math.floor(delta*10);
+      document.getElementById('metal-points').innerText="Очки: "+metalPoints;
+    }
+  });
+}else{
+  alert("Ваш браузер не підтримує акселерометр!");
+}
+
+// Инициализация
+updateLeaderboard();
+</script>
+
+</body>
+</html>
