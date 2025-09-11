@@ -1,6 +1,6 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #222;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(135deg, #0b3d91, #1a1a1a);
   color: #fff;
   display: flex;
   justify-content: center;
@@ -10,40 +10,77 @@ body {
   flex-direction: column;
 }
 
+h1 {
+  font-size: 28px;
+  margin-bottom: 30px;
+  text-shadow: 1px 1px 5px rgba(0,0,0,0.7);
+}
+
 button {
   margin: 10px;
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-size: 16px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: none;
   cursor: pointer;
-  background: #0a84ff;
+  background: linear-gradient(135deg, #0a84ff, #3b8cff);
   color: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: transform 0.1s, box-shadow 0.2s;
 }
 
-#meter-circle {
-  width: 250px;
-  height: 125px; /* половина круга */
-  background: conic-gradient(#0f0 0%, #ff0 50%, #f00 100%);
-  border-radius: 125px 125px 0 0;
-  position: relative;
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+#meter-container {
+  width: 300px;
+  height: 160px;
   margin: 20px auto;
+  position: relative;
 }
 
-#meter-pointer {
-  width: 4px;
-  height: 125px;
-  background: #fff;
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform-origin: bottom center;
-  transform: rotate(0deg);
-  transition: transform 1s ease-out;
+#meter-svg {
+  transform: rotate(-90deg);
+}
+
+#pointer {
+  transform-origin: 150px 150px;
+  transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  border-radius: 3px;
+}
+
+text {
+  font-size: 12px;
+  fill: #fff;
+  font-family: Arial, sans-serif;
 }
 
 #result {
   margin-top: 20px;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
+  text-shadow: 1px 1px 3px #000;
+}
+
+#footer-text {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #ccc;
+  text-align: center;
+}
+
+#footer-text a {
+  color: #0a84ff;
+  text-decoration: none;
+}
+
+#footer-text a:hover {
+  text-decoration: underline;
 }
