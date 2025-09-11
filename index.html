@@ -17,7 +17,7 @@
   </div>
 
   <!-- Экран измерения -->
-  <div id="meter-screen" style="display:none;">
+  <div id="meter-screen" style="display:none; position:relative;">
     <div id="meter-container">
       <svg id="meter-svg" width="300" height="300">
         <defs>
@@ -41,6 +41,10 @@
     <div id="footer-text">
       на правах реклами <a href="https://kadet.kh.ua/" target="_blank">Державного ліцею з посиленою військово-фізичною підготовкою «Слобожанський»</a>
     </div>
+
+    <!-- Превью и взрыв -->
+    <img id="preview-img" src="preview.png" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); display:none; width:200px; height:200px; pointer-events:none;" alt="Превью">
+    <img id="explosion-gif" src="explosion.gif" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); display:none; width:200px; height:200px; pointer-events:none;" alt="Взрыв">
   </div>
 
 </div>
