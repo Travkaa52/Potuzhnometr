@@ -8,21 +8,28 @@
 </head>
 <body>
 <div id="app">
-  <h1>Потужнометр</h1>
-  
-  <div id="meter-container">
-    <div id="meter-fill"></div>
-  </div>
-  
-  <div id="modes">
-    <button class="mode-btn" data-meter="1" data-colors="#0f0,#ff0,#f00">Потужнометр</button>
-    <button class="mode-btn" data-meter="2" data-colors="#0ff,#f0f,#ff0">Зрадометр</button>
+
+  <!-- Главное меню -->
+  <div id="menu">
+    <h1>Виберіть мемометр</h1>
+    <button class="menu-btn" data-meter="1">Потужнометр</button>
+    <button class="menu-btn" data-meter="2">Зрадометр</button>
   </div>
 
-  <button id="measureBtn">Виміряти потужність</button>
-  <div id="result"></div>
+  <!-- Экран измерения -->
+  <div id="meter-screen" style="display:none;">
+    <div id="meter-container">
+      <div id="meter-circle">
+        <div id="meter-pointer"></div>
+      </div>
+    </div>
+
+    <button id="measureBtn">Виміряти потужність</button>
+    <div id="result"></div>
+    <button id="backBtn">Назад</button>
+  </div>
+
 </div>
-
 <script src="script.js"></script>
 </body>
 </html>
