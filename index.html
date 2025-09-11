@@ -15,7 +15,7 @@ body {
 }
 h1 { font-size: 2em; margin: 20px 0; text-shadow: 0 0 10px #ffd700; }
 
-#tabs { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+#tabs { display: flex; justify-content: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
 #tabs button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: #ff6f61; color: white; transition: 0.3s; }
 #tabs button:hover { background: #ff3b2e; }
 
@@ -43,6 +43,9 @@ th, td { padding: 8px; text-align: center; }
 .level-up { animation: glow 1s infinite alternate; }
 @keyframes glow { 0% { text-shadow:0 0 5px #ff0;} 100%{text-shadow:0 0 20px #ff0;} }
 
+#motion-bar-container { width:80%;height:30px;background:#333;margin:20px auto;border-radius:15px;overflow:hidden; }
+#motion-bar { height:100%;width:0%;background:lime;border-radius:15px; transition: width 0.1s; }
+
 </style>
 </head>
 <body>
@@ -53,6 +56,7 @@ th, td { padding: 8px; text-align: center; }
   <button onclick="showSection('home')">Головна</button>
   <button onclick="showSection('shop')">Магазин</button>
   <button onclick="showSection('stats')">Статистика</button>
+  <button onclick="showSection('metal')">Металошукач</button>
 </div>
 
 <!-- Главная -->
@@ -64,7 +68,7 @@ th, td { padding: 8px; text-align: center; }
   <div id="power-text"></div>
   <button id="measure-btn" class="action-btn">Виміряти потужність</button>
   <div id="cat-container">
-    <img id="cat-img" src="skins/cool.png" alt="Кіт">
+    <img id="cat-img" src="skins/cool.png" alt="Кіт" onerror="this.src='skins/cool.png'">
   </div>
 </section>
 
@@ -85,8 +89,18 @@ th, td { padding: 8px; text-align: center; }
   </table>
 </section>
 
+<!-- Металошукач -->
+<section id="metal">
+  <h2>🔍 Металошукач</h2>
+  <div id="motion-bar-container">
+    <div id="motion-bar"></div>
+  </div>
+  <div id="motion-value">Сила руху: 0</div>
+  <div id="metal-points">Очки: 0</div>
+</section>
+
 <script>
-// Разделы сайта
+// Разделы
 function showSection(section) {
   document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
   document.getElementById(section).classList.add('active');
@@ -98,7 +112,7 @@ const skins = [
   "Gemini_Generated_Image_kuuk4dkuuk4dkuuk.png",
   "Gemini_Generated_Image_mwuup6mwuup6mwuu.png",
   "Gemini_Generated_Image_n8rum0n8rum0n8ru.png",
-  "Gemini_Generated_Image_upj5p1upj5p1upj5cool.png"
+  "cool.png"
 ];
 const shopContainer = document.getElementById('shop-container');
 skins.forEach(skin=>{
@@ -108,14 +122,17 @@ skins.forEach(skin=>{
   div.onclick=()=>selectSkin(skin);
   shopContainer.appendChild(div);
 });
-function selectSkin(skin){document.getElementById('cat-img').src='skins/'+skin; localStorage.setItem('selectedSkin',skin);}
+function selectSkin(skin){
+  document.getElementById('cat-img').src='skins/'+skin;
+  localStorage.setItem('selectedSkin',skin);
+}
 
 // Игрок
 let points=parseInt(localStorage.getItem('points'))||0;
 let level=parseInt(localStorage.getItem('level'))||1;
 let leaderboard=JSON.parse(localStorage.getItem('leaderboard'))||[];
 
-// Лидеры
+// Таблица лидеров
 function updateLeaderboard(){
   const tbody=document.getElementById('leaderboard');
   tbody.innerHTML='';
@@ -127,7 +144,7 @@ function updateLeaderboard(){
   });
 }
 
-// Измерение мощности
+// Потужнометр
 const measureBtn=document.getElementById('measure-btn');
 const powerBar=document.getElementById('power-bar');
 const powerValue=document.getElementById('power-value');
@@ -153,7 +170,6 @@ measureBtn.addEventListener('click',()=>{
   else if(value<9000) powerText.innerText="Дуже потужний 🔥";
   else powerText.innerText="Потужний як атом 💥";
 
-  // Очки и уровни
   points+=Math.floor(value/100);
   localStorage.setItem('points',points);
   level=Math.min(100,Math.floor(points/50)+1);
@@ -162,20 +178,8 @@ measureBtn.addEventListener('click',()=>{
   if(level%3===0) document.body.classList.add('level-up');
   else document.body.classList.remove('level-up');
 
-  // Таблица лидеров
-  const username="User"; // здесь можно вставить имя из Telegram
+  const username="User"; 
   const idx=leaderboard.findIndex(u=>u.name===username);
   if(idx>=0) leaderboard[idx].points=points;
   else leaderboard.push({name:username,points});
   localStorage.setItem('leaderboard',JSON.stringify(leaderboard));
-  updateLeaderboard();
-});
-
-// Инициализация
-updateLeaderboard();
-const savedSkin=localStorage.getItem('selectedSkin');
-if(savedSkin) document.getElementById('cat-img').src='skins/'+savedSkin;
-
-</script>
-</body>
-</html>
