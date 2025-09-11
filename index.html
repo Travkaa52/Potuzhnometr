@@ -2,202 +2,28 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Потужнометр</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom, #1f1c2c, #928dab);
-  color: white;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-}
-h1 { font-size: 2em; margin: 20px 0; text-shadow: 0 0 10px #ffd700; }
-
-#tabs { display: flex; justify-content: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-#tabs button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: #ff6f61; color: white; transition: 0.3s; }
-#tabs button:hover { background: #ff3b2e; }
-
-section { display: none; padding: 20px; }
-section.active { display: block; }
-
-#power-container { width: 80%; margin: 20px auto; height: 40px; background: #333; border-radius: 20px; overflow: hidden; }
-#power-bar { height: 100%; width: 0%; background: green; border-radius: 20px; transition: width 0.5s, background 0.5s; }
-#power-value { margin-top: 10px; font-size: 1.5em; font-weight: bold; }
-#power-text { margin-top: 5px; font-size: 1.2em; min-height: 20px; }
-
-button.action-btn { margin-top: 20px; padding: 10px 20px; font-size: 1em; border-radius: 8px; border: none; cursor: pointer; background: #ff6f61; color: white; transition: 0.3s; }
-button.action-btn:hover { background: #ff3b2e; }
-
-.skin-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
-.skin { cursor: pointer; text-align: center; padding:5px; border:1px solid #fff; border-radius:5px; }
-
-table { margin: 0 auto; border-collapse: collapse; width: 90%; max-width: 600px; }
-table, th, td { border: 1px solid #fff; }
-th, td { padding: 8px; text-align: center; }
-
-.level-up { animation: glow 1s infinite alternate; }
-@keyframes glow { 0% { text-shadow:0 0 5px #ff0;} 100%{text-shadow:0 0 20px #ff0;} }
-
-#motion-bar-container { width:80%;height:30px;background:#333;margin:20px auto;border-radius:15px;overflow:hidden; }
-#motion-bar { height:100%;width:0%;background:lime;border-radius:15px; transition: width 0.1s; }
-
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Potuzhnometr Web</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="app">
+  <h1>Потужнометр</h1>
+  
+  <div id="meter-container">
+    <img id="meter-image" src="images/meter1.png" alt="Meter">
+    <div id="meter-fill"></div>
+  </div>
+  
+  <div id="modes">
+    <button class="mode-btn" data-meter="meter1.png">Манометр</button>
+    <button class="mode-btn" data-meter="meter2.png">Мемометр</button>
+  </div>
 
-<h1>🔥 Потужнометр 🔥</h1>
-
-<div id="tabs">
-  <button onclick="showSection('home')">Головна</button>
-  <button onclick="showSection('shop')">Магазин</button>
-  <button onclick="showSection('stats')">Статистика</button>
-  <button onclick="showSection('metal')">Металошукач</button>
+  <button id="measureBtn">Виміряти потужність</button>
+  <div id="result"></div>
 </div>
 
-<!-- Главная -->
-<section id="home" class="active">
-  <div id="power-container">
-    <div id="power-bar"></div>
-  </div>
-  <div id="power-value">0</div>
-  <div id="power-text"></div>
-  <button id="measure-btn" class="action-btn">Виміряти потужність</button>
-</section>
-
-<!-- Магазин -->
-<section id="shop">
-  <h2>Магазин скинів</h2>
-  <div class="skin-container" id="shop-container"></div>
-</section>
-
-<!-- Статистика -->
-<section id="stats">
-  <h2>Таблиця лідерів</h2>
-  <table>
-    <thead>
-      <tr><th>Місце</th><th>Ім’я</th><th>Очки</th></tr>
-    </thead>
-    <tbody id="leaderboard"></tbody>
-  </table>
-</section>
-
-<!-- Металошукач -->
-<section id="metal">
-  <h2>🔍 Металошукач</h2>
-  <div id="motion-bar-container">
-    <div id="motion-bar"></div>
-  </div>
-  <div id="motion-value">Сила руху: 0</div>
-  <div id="metal-points">Очки: 0</div>
-</section>
-
-<script>
-// Разделы
-function showSection(section) {
-  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-  document.getElementById(section).classList.add('active');
-}
-
-// Скины (только текст)
-const skins = ["cool","skin1","skin2","skin3","skin4"];
-const shopContainer = document.getElementById('shop-container');
-skins.forEach(skin=>{
-  const div=document.createElement('div');
-  div.className='skin';
-  div.innerText=skin;
-  div.onclick=()=>selectSkin(skin);
-  shopContainer.appendChild(div);
-});
-function selectSkin(skin){
-  alert('Выбрано: ' + skin);
-  localStorage.setItem('selectedSkin',skin);
-}
-
-// Игрок
-let points=parseInt(localStorage.getItem('points'))||0;
-let level=parseInt(localStorage.getItem('level'))||1;
-let leaderboard=JSON.parse(localStorage.getItem('leaderboard'))||[];
-
-// Таблица лидеров
-function updateLeaderboard(){
-  const tbody=document.getElementById('leaderboard');
-  tbody.innerHTML='';
-  const sorted=leaderboard.sort((a,b)=>b.points-a.points);
-  sorted.forEach((u,i)=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${i+1}</td><td>${u.name}</td><td>${u.points}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-// Потужнометр
-const measureBtn=document.getElementById('measure-btn');
-const powerBar=document.getElementById('power-bar');
-const powerValue=document.getElementById('power-value');
-const powerText=document.getElementById('power-text');
-let lastClick=0;
-
-measureBtn.addEventListener('click',()=>{
-  const now=Date.now();
-  if(now-lastClick<30000){alert("Зачекай трохи перед наступним вимірюванням!"); return;}
-  lastClick=now;
-
-  const value=Math.floor(Math.random()*9999)+1;
-  const percent=Math.min(value/9999*100,100);
-  powerBar.style.width=percent+"%";
-  if(value<1000) powerBar.style.background="green";
-  else if(value<5000) powerBar.style.background="yellow";
-  else if(value<9000) powerBar.style.background="orange";
-  else powerBar.style.background="red";
-
-  powerValue.innerText=value;
-  if(value<1000) powerText.innerText="Слабачок 💧";
-  else if(value<5000) powerText.innerText="Середня потужність ⚡";
-  else if(value<9000) powerText.innerText="Дуже потужний 🔥";
-  else powerText.innerText="Потужний як атом 💥";
-
-  points+=Math.floor(value/100);
-  localStorage.setItem('points',points);
-  level=Math.min(100,Math.floor(points/50)+1);
-  localStorage.setItem('level',level);
-
-  if(level%3===0) document.body.classList.add('level-up');
-  else document.body.classList.remove('level-up');
-
-  const username="User"; 
-  const idx=leaderboard.findIndex(u=>u.name===username);
-  if(idx>=0) leaderboard[idx].points=points;
-  else leaderboard.push({name:username,points});
-  localStorage.setItem('leaderboard',JSON.stringify(leaderboard));
-  updateLeaderboard();
-});
-
-// Металошукач через акселерометр
-let lastAccel={x:0,y:0,z:0};
-let metalPoints=0;
-if(window.DeviceMotionEvent){
-  window.addEventListener('devicemotion',event=>{
-    const a=event.accelerationIncludingGravity;
-    if(!a) return;
-    const delta=Math.sqrt((a.x-lastAccel.x)**2 + (a.y-lastAccel.y)**2 + (a.z-lastAccel.z)**2);
-    lastAccel={x:a.x,y:a.y,z:a.z};
-    const percent=Math.min(delta*10,100);
-    document.getElementById('motion-bar').style.width=percent+"%";
-    document.getElementById('motion-value').innerText="Сила руху: "+delta.toFixed(2);
-    if(delta>1.5){
-      metalPoints+=Math.floor(delta*10);
-      document.getElementById('metal-points').innerText="Очки: "+metalPoints;
-    }
-  });
-}else{
-  alert("Ваш браузер не підтримує акселерометр!");
-}
-
-// Инициализация
-updateLeaderboard();
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
