@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  // Элементы страницы
   const menu = document.getElementById('menu');
   const meterScreen = document.getElementById('meter-screen');
   const measureBtn = document.getElementById('measureBtn');
@@ -10,123 +9,86 @@ document.addEventListener('DOMContentLoaded', () => {
   const numbersGroup = document.getElementById('numbers');
   const gradient = document.getElementById('meter-gradient');
   const resultDiv = document.getElementById('result');
+  const previewImg = document.getElementById('preview-img');
+  const explosionGif = document.getElementById('explosion-gif');
 
-  // Текущее состояние
-  let currentMeter = 1; // по умолчанию
+  let currentMeter = 1;
 
-  // Звуки (положи файлы в папку sounds/)
   const sounds = {
-    1: ['sounds/meter1_1.mp3', 'sounds/meter1_2.mp3', 'sounds/meter1_3.mp3'],
-    2: ['sounds/meter2_1.mp3', 'sounds/meter2_2.mp3', 'sounds/meter2_3.mp3']
+    1: ['sounds/meter1_1.mp3','sounds/meter1_2.mp3','sounds/meter1_3.mp3'],
+    2: ['sounds/meter2_1.mp3','sounds/meter2_2.mp3','sounds/meter2_3.mp3']
   };
 
-  // Цвета (градиенты) для мемометров
   const meterColors = {
-    1: ['#0f0', '#ff0', '#f00'],   // Потужнометр
-    2: ['#0ff', '#f0f', '#ff0']    // Зрадометр
+    1: ['#0f0','#ff0','#f00'],
+    2: ['#0ff','#f0f','#ff0']
   };
 
-  // Параметры шкалы
   const centerX = 150;
   const centerY = 150;
   const radius = 120;
-  const totalTicks = 20; // сколько делений вокруг круга (0..20)
+  const totalTicks = 20;
 
-  // --- Функция: строим деления и цифры по окружности ---
   function buildScale() {
     ticksGroup.innerHTML = '';
     numbersGroup.innerHTML = '';
-
     for (let i = 0; i <= totalTicks; i++) {
-      const angle = 2 * Math.PI * i / totalTicks; // 0..2π
+      const angle = 2 * Math.PI * i / totalTicks;
       const cosA = Math.cos(angle);
       const sinA = Math.sin(angle);
 
-      // координаты для деления (короткая и длинная линия)
+      // деления
       const x1 = centerX + cosA * (radius - 6);
       const y1 = centerY + sinA * (radius - 6);
       const x2 = centerX + cosA * (radius + 6);
       const y2 = centerY + sinA * (radius + 6);
-
       const tick = document.createElementNS('http://www.w3.org/2000/svg','line');
       tick.setAttribute('x1', x1);
       tick.setAttribute('y1', y1);
       tick.setAttribute('x2', x2);
       tick.setAttribute('y2', y2);
-      tick.setAttribute('stroke', '#ffffff');
-      tick.setAttribute('stroke-width', i % 5 === 0 ? 3 : 1.5); // большие метки через каждые 5
+      tick.setAttribute('stroke', '#fff');
+      tick.setAttribute('stroke-width', i%5===0?3:1.5);
       ticksGroup.appendChild(tick);
 
-      // цифры (0..100)
-      const numberX = centerX + cosA * (radius + 22);
-      const numberY = centerY + sinA * (radius + 22);
-
+      // цифры
+      const numberX = centerX + cosA*(radius+22);
+      const numberY = centerY + sinA*(radius+22);
       const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
       txt.setAttribute('x', numberX);
-      txt.setAttribute('y', numberY + 4); // небольшая корректировка
-      txt.setAttribute('text-anchor', 'middle');
-      txt.setAttribute('alignment-baseline', 'middle');
-      txt.setAttribute('fill', '#fff');
-
-      // округлённый процент
-      const value = Math.round(i * (100 / totalTicks));
-      txt.textContent = value;
-
-      // SVG у тебя повёрнут в CSS rotate(-90deg), поэтому чтобы цифры были читабельны —
-      // компенсируем поворот для текста (поворот +90deg)
-      txt.setAttribute('transform', `rotate(90 ${numberX} ${numberY})`);
-
+      txt.setAttribute('y', numberY+4);
+      txt.setAttribute('text-anchor','middle');
+      txt.setAttribute('alignment-baseline','middle');
+      txt.setAttribute('fill','#fff');
+      txt.setAttribute('transform',`rotate(90 ${numberX} ${numberY})`);
+      txt.textContent = Math.round(i*(100/totalTicks));
       numbersGroup.appendChild(txt);
     }
   }
 
-  // строим шкалу при загрузке
   buildScale();
 
-  // --- Функция: применяем градиент цветов для текущего мемометра ---
   function applyGradientForMeter(meterId) {
     const stops = gradient.querySelectorAll('stop');
     const colors = meterColors[meterId] || meterColors[1];
-    if (stops.length >= 3) {
-      stops[0].setAttribute('stop-color', colors[0]);
-      stops[1].setAttribute('stop-color', colors[1]);
-      stops[2].setAttribute('stop-color', colors[2]);
-    } else {
-      // на случай, если структура иная
-      gradient.innerHTML = `
-        <stop offset="0%" stop-color="${colors[0]}"/>
-        <stop offset="50%" stop-color="${colors[1]}"/>
-        <stop offset="100%" stop-color="${colors[2]}"/>
-      `;
+    if(stops.length>=3){
+      stops[0].setAttribute('stop-color',colors[0]);
+      stops[1].setAttribute('stop-color',colors[1]);
+      stops[2].setAttribute('stop-color',colors[2]);
     }
   }
 
-  // Установим начальный градиент
-  applyGradientForMeter(currentMeter);
+  function setPointerDeg(deg){ pointer.style.transform = `rotate(${deg}deg)`; }
+  function resetPointer(){ setPointerDeg(0); }
 
-  // --- Управление стрелкой ---
-  // В CSS для #pointer должен быть указан transform-origin: 150px 150px; и transition: transform ...;
-  function setPointerDeg(deg) {
-    // используем CSS трансформ (deg) — тогда анимация через transition сработает
-    pointer.style.transform = `rotate(${deg}deg)`;
-  }
-
-  function resetPointer() {
-    setPointerDeg(0);
-  }
-
-  // --- Воспроизведение звука (без блокировок) ---
-  function playRandomSoundForMeter(meterId) {
-    const list = sounds[meterId] || sounds[1];
-    if (!list || list.length === 0) return;
-    const idx = Math.floor(Math.random() * list.length);
+  function playRandomSoundForMeter(meterId){
+    const list = sounds[meterId]||sounds[1];
+    const idx = Math.floor(Math.random()*list.length);
     const audio = new Audio(list[idx]);
-    // попытка проиграть — подавляем возможную ошибку автоплей-браузера
-    audio.play().catch(() => {/* silent */});
+    audio.play().catch(()=>{});
   }
 
-  // --- Открытие экрана выбранного мемометра ---
-  function openMeter(meterId) {
+  function openMeter(meterId){
     currentMeter = meterId;
     applyGradientForMeter(currentMeter);
     resetPointer();
@@ -135,48 +97,40 @@ document.addEventListener('DOMContentLoaded', () => {
     meterScreen.style.display = 'block';
   }
 
-  // --- Обработчики кнопок меню ---
-  const menuButtons = document.querySelectorAll('.menu-btn');
-  menuButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = Number(btn.dataset.meter) || 1;
-      openMeter(id);
-    });
+  document.querySelectorAll('.menu-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>openMeter(Number(btn.dataset.meter)||1));
   });
 
-  // Назад
-  backBtn.addEventListener('click', () => {
-    meterScreen.style.display = 'none';
-    menu.style.display = 'block';
+  backBtn.addEventListener('click',()=>{
+    meterScreen.style.display='none';
+    menu.style.display='block';
+    previewImg.style.display='none';
+    explosionGif.style.display='none';
   });
 
-  // --- Генерация случайной мощности и движение стрелки ---
-  function getRandomPower() {
-    return Math.floor(Math.random() * 101); // 0..100
-  }
+  function getRandomPower(){ return Math.floor(Math.random()*101); }
+  function movePointerByPower(power){ setPointerDeg(power/100*360); }
 
-  function movePointerByPower(power) {
-    // преобразуем процент в градусы 0..360
-    const deg = power / 100 * 360;
-    // Для приятной анимации — можно добавить небольшой рандомизатор скорости/ easing в CSS
-    setPointerDeg(deg);
-  }
-
-  // Кнопка измерения
-  measureBtn.addEventListener('click', () => {
-    // Генерируем мощность
+  measureBtn.addEventListener('click',()=>{
     const power = getRandomPower();
-    // Двигаем стрелку
     movePointerByPower(power);
-    // Проигрываем звук для текущего мемометра
     playRandomSoundForMeter(currentMeter);
 
-    // Отображаем текст результата внизу
-    if (currentMeter === 1) resultDiv.textContent = `Потужність: ${power}%`;
-    else resultDiv.textContent = `Рівень зради: ${power}%`;
+    if(currentMeter===1) resultDiv.textContent=`Потужність: ${power}%`;
+    else resultDiv.textContent=`Рівень зради: ${power}%`;
+
+    if(power>=90){
+      previewImg.style.display='block';
+      setTimeout(()=>{
+        previewImg.style.display='none';
+        explosionGif.style.display='block';
+        setTimeout(()=>explosionGif.style.display='none',1500);
+      },800);
+    } else {
+      previewImg.style.display='none';
+      explosionGif.style.display='none';
+    }
   });
 
-  // Сброс при загрузке
   resetPointer();
-
 });
