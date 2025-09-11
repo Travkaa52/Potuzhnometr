@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const radius = 120;
   const totalTicks = 20;
 
+  // Построение 360° шкалы с делениями и цифрами
   function buildScale() {
     ticksGroup.innerHTML = '';
     numbersGroup.innerHTML = '';
@@ -121,16 +122,25 @@ document.addEventListener('DOMContentLoaded', () => {
     else resultDiv.textContent=`Рівень зради: ${power}%`;
 
     if(power >= 90){
-      // Показываем превью на 2 секунды
+      // Превью на 2 секунды с звуком boo
       previewImg.classList.add('show');
+      const previewSound = new Audio('sounds/boo.mp3');
+      previewSound.play().catch(()=>{});
+
       setTimeout(()=>{
         previewImg.classList.remove('show');
-        // Показываем взрыв на 2 секунды
+
+        // Взрыв на 2 секунды с звуком explosion
         explosionGif.classList.add('show');
+        const explosionSound = new Audio('sounds/explosion.mp3');
+        explosionSound.play().catch(()=>{});
+
         setTimeout(()=>{
           explosionGif.classList.remove('show');
         }, 2000);
+
       }, 2000);
+
     } else {
       previewImg.classList.remove('show');
       explosionGif.classList.remove('show');
