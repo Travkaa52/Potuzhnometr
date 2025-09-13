@@ -1,45 +1,446 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Линейний Потужнометр</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лінійний Потужномір</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        #app {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: #ffffff;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .description {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            color: #d1d5db;
+        }
+
+        .menu-btn {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 9999px;
+            background-color: #3b82f6;
+            color: white;
+            font-size: 1.125rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        
+        .menu-btn:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        /* Meter-specific styles */
+        #meter-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background-image: url('device-bg.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        #meter-screen.active {
+            display: flex;
+        }
+
+        /* Container for the scale and pointer */
+        #meter-elements {
+            position: absolute;
+            top: 290px;
+            width: 80%;
+            max-width: 320px;
+            height: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        #scale {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .tick {
+            width: 1px;
+            height: 10px;
+            background-color: #ffffff;
+            position: absolute;
+        }
+        .tick-label {
+            position: absolute;
+            font-size: 0.75rem;
+            color: #ffffff;
+            transform: translateX(-50%);
+            top: 15px;
+        }
+        
+        /* Pointer */
+        #pointer {
+            position: absolute;
+            height: 25px;
+            width: 5px;
+            background: linear-gradient(to bottom, #ef4444, #f59e0b, #22c55e);
+            border-radius: 2px;
+            transition: left 1s ease-in-out;
+            top: -7.5px;
+        }
+
+        /* Buttons */
+        #buttons-container {
+            position: absolute;
+            bottom: 60px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #measureBtn, #backBtn, #geminiBtn {
+            width: 80%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        #measureBtn {
+            background-color: #10b981;
+            color: white;
+        }
+        #measureBtn:hover {
+            background-color: #059669;
+            transform: scale(1.05);
+        }
+        
+        #backBtn {
+            background-color: #6b7280;
+            color: white;
+        }
+        #backBtn:hover {
+            background-color: #4b5563;
+            transform: scale(1.05);
+        }
+
+        .gemini-btn {
+            background-color: #7b29a8;
+            color: white;
+        }
+        .gemini-btn:hover {
+            background-color: #5d1f81;
+            transform: scale(1.05);
+        }
+        
+        #result {
+            position: absolute;
+            top: 330px;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        #geminiResult {
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            text-align: left;
+            white-space: pre-wrap;
+            position: absolute;
+            top: 400px;
+            width: 90%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #explosion-gif, #preview-img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            display: none;
+            z-index: 20;
+        }
+        #explosion-gif.show, #preview-img.show {
+            display: block;
+        }
+    </style>
 </head>
 <body>
+
 <div id="app">
-  <!-- Главное меню -->
-  <div id="menu">
-    <h1>Виберіть мемометр</h1>
-    <button class="menu-btn" data-meter="1">Потужнометр</button>
-    <button class="menu-btn" data-meter="2">Зрадометр</button>
-  </div>
+    <div class="container">
+        <!-- Main menu -->
+        <div id="menu">
+            <h1>Виберіть мемометр</h1>
+            <p class="description">
+                Виміряйте потужність або зраду за допомогою нашого інструмента.
+            </p>
+            <button class="menu-btn" data-meter="1">Потужнометр</button>
+            <button class="menu-btn" data-meter="2">Зрадометр</button>
+        </div>
 
-  <!-- Экран измерения -->
-  <div id="meter-screen" style="display:none;">
-    <!-- Фон прибора -->
-    <img id="meter-bg" src="device-bg.jpg" alt="Фон прибора" style="display:none;">
+        <!-- Measurement screen -->
+        <div id="meter-screen">
+            <h1 id="meterTitle" class="absolute top-20 text-3xl font-bold"></h1>
+            
+            <div id="meter-elements">
+                <div id="scale"></div>
+                <div id="pointer"></div>
+            </div>
 
-    <div id="meter-container">
-      <div id="ticks"></div>
-      <div id="pointer"></div>
+            <div id="buttons-container">
+                <button id="measureBtn">Виміряти</button>
+                <button id="backBtn">Назад</button>
+            </div>
+
+            <div id="result"></div>
+            <button id="geminiBtn" class="gemini-btn" style="display: none;"></button>
+            <div id="geminiResult"></div>
+        </div>
+
+        <img id="preview-img" src="https://placehold.co/150x150/000000/FFFFFF?text=Preview" alt="Preview">
+        <img id="explosion-gif" src="https://placehold.co/150x150/000000/FFFFFF?text=Explosion" alt="Explosion">
     </div>
-
-    <button id="measureBtn">Виміряти</button>
-    <button id="backBtn">Назад</button>
-
-    <div id="result"></div>
-
-    <div id="footer-text">
-      на правах реклами <a href="https://kadet.kh.ua/" target="_blank">
-      Державного ліцею з посиленою військово-фізичною підготовкою «Слобожанський»</a>
-    </div>
-
-    <img id="preview-img" src="preview.png" alt="Превью">
-    <img id="explosion-gif" src="explosion.gif" alt="Взрыв">
-  </div>
 </div>
 
-<script src="script.js"></script>
+<script>
+    const menuDiv = document.getElementById('menu');
+    const meterScreenDiv = document.getElementById('meter-screen');
+    const meterTitle = document.getElementById('meterTitle');
+    const measureBtn = document.getElementById('measureBtn');
+    const backBtn = document.getElementById('backBtn');
+    const geminiBtn = document.getElementById('geminiBtn');
+    const pointer = document.getElementById('pointer');
+    const resultDiv = document.getElementById('result');
+    const geminiResultDiv = document.getElementById('geminiResult');
+    const scale = document.getElementById('scale');
+    const previewImg = document.getElementById('preview-img');
+    const explosionGif = document.getElementById('explosion-gif');
+    let currentMeterType = '1';
+    let currentValue = 0;
+
+    // API settings
+    const apiKey = ""; 
+    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent';
+    
+    // Placeholder audio for demonstration
+    const sounds = {
+        1: {
+            '80': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Placeholder
+            '89': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', // Placeholder
+            '98': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'  // Placeholder
+        },
+        2: {
+            '80': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', // Placeholder
+            '89': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3', // Placeholder
+            '98': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3'  // Placeholder
+        },
+        'boo': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3', // Placeholder
+        'explosion': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' // Placeholder
+    };
+
+    // Function to generate the scale
+    function generateScale() {
+        scale.innerHTML = '';
+        const totalTicks = 11;
+        const scaleWidth = document.getElementById('meter-elements').offsetWidth;
+        for (let i = 0; i < totalTicks; i++) {
+            const tick = document.createElement('div');
+            tick.className = 'tick';
+            const position = (i / (totalTicks - 1)) * 100;
+            tick.style.left = `${position}%`;
+            scale.appendChild(tick);
+
+            if (i % 2 === 0) {
+                const label = document.createElement('div');
+                label.className = 'tick-label';
+                label.textContent = `${i * 10}`;
+                label.style.left = `${position}%`;
+                scale.appendChild(label);
+            }
+        }
+    }
+
+    function playSoundForPower(meterId, power) {
+        for (const key in sounds[meterId]) {
+            if (Math.abs(power - Number(key)) <= 5) {
+                new Audio(sounds[meterId][key]).play().catch(() => {});
+            }
+        }
+    }
+
+    document.querySelectorAll('.menu-btn').forEach(button => {
+        button.addEventListener('click', (event) => {
+            currentMeterType = event.target.dataset.meter;
+            menuDiv.style.display = 'none';
+            meterScreenDiv.classList.add('active');
+            resultDiv.textContent = '';
+            geminiResultDiv.textContent = '';
+            geminiBtn.style.display = 'none';
+            pointer.style.left = '0%';
+            previewImg.classList.remove('show');
+            explosionGif.classList.remove('show');
+            generateScale();
+
+            if (currentMeterType === '1') {
+                meterTitle.textContent = 'ПОТУЖНОМЕТР';
+            } else {
+                meterTitle.textContent = 'ЗРАДОМЕТР';
+            }
+        });
+    });
+
+    backBtn.addEventListener('click', () => {
+        menuDiv.style.display = 'block';
+        meterScreenDiv.classList.remove('active');
+        previewImg.classList.remove('show');
+        explosionGif.classList.remove('show');
+    });
+
+    measureBtn.addEventListener('click', () => {
+        const powerPoints = [80, 89, 98];
+        const randomIdx = Math.floor(Math.random() * powerPoints.length);
+        currentValue = powerPoints[randomIdx];
+
+        const meterElementsWidth = document.getElementById('meter-elements').offsetWidth;
+        const pointerPosition = (currentValue / 100) * meterElementsWidth;
+        pointer.style.left = `${pointerPosition - (pointer.offsetWidth / 2)}px`;
+
+        if (currentMeterType === '1') {
+            resultDiv.textContent = `Ваш рівень потужності: ${currentValue}%`;
+            geminiBtn.textContent = '✨ Розширена аналітика ✨';
+        } else {
+            resultDiv.textContent = `Ваш рівень зради: ${currentValue}%`;
+            geminiBtn.textContent = '✨ Розвінчати міф про зраду ✨';
+        }
+        geminiBtn.style.display = 'block';
+
+        playSoundForPower(currentMeterType, currentValue);
+
+        if (currentValue >= 98) {
+            previewImg.classList.add("show");
+            new Audio(sounds['boo']).play().catch(() => {});
+            setTimeout(() => {
+                previewImg.classList.remove("show");
+                explosionGif.classList.add("show");
+                new Audio(sounds['explosion']).play().catch(() => {});
+                setTimeout(() => {
+                    explosionGif.classList.remove("show");
+                }, 2000);
+            }, 2000);
+        } else {
+            previewImg.classList.remove("show");
+            explosionGif.classList.remove("show");
+        }
+    });
+
+    async function callGeminiApi(prompt, retries = 3, delay = 1000) {
+      try {
+        const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+        };
+        const response = await fetch(`${apiUrl}?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            if (response.status === 429 && retries > 0) {
+                console.warn(`Too many requests. Retrying in ${delay}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return callGeminiApi(prompt, retries - 1, delay * 2);
+            }
+            throw new Error(`API error: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+        return text || 'Не вдалося отримати відповідь від API.';
+      } catch (error) {
+        console.error('API call failed:', error);
+        return 'Виникла помилка під час обробки запиту.';
+      }
+    }
+
+    geminiBtn.addEventListener('click', async () => {
+        let prompt;
+        geminiResultDiv.textContent = 'Генерую аналітику...';
+        geminiBtn.disabled = true;
+
+        if (currentMeterType === '1') {
+            prompt = `Запропонуйте детальну, креативну та надихаючу аналітику для результату потужності ${currentValue}%. Опишіть, що цей рівень означає для людини, яка його отримала. Використовуйте позитивний та жартівливий тон.`;
+        } else {
+            prompt = `Напишіть гумористичне, сатиричне пояснення для результату зради ${currentValue}%. Розіграйте ситуацію так, ніби це найменша або найбільша зрада, яка тільки може бути, залежно від значення. Використовуйте креативний тон.`;
+        }
+        
+        const result = await callGeminiApi(prompt);
+        geminiResultDiv.textContent = result;
+        geminiBtn.disabled = false;
+    });
+
+    window.addEventListener('resize', generateScale);
+
+    window.onload = () => {
+        if (meterScreenDiv.classList.contains('active')) {
+            generateScale();
+        }
+    };
+</script>
 </body>
 </html>
