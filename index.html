@@ -1,69 +1,43 @@
 <!DOCTYPE html>
-
 <html lang="uk">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Линейний Потужнометр</title>
-
 <link rel="stylesheet" href="style.css">
-
 </head>
-
 <body>
-
 <div id="app">
-
   <!-- Главное меню -->
-
   <div id="menu">
-
     <h1>Виберіть мемометр</h1>
-
     <button class="menu-btn" data-meter="1">Потужнометр</button>
-
     <button class="menu-btn" data-meter="2">Зрадометр</button>
-
   </div>
 
   <!-- Экран измерения -->
-
   <div id="meter-screen" style="display:none;">
-
     <div id="meter-container">
-
       <div id="ticks"></div>
-
       <div id="pointer"></div>
-
     </div>
 
     <button id="measureBtn">Виміряти</button>
+    <button id="backBtn">Назад</button>
 
     <div id="result"></div>
 
-    <button id="backBtn">Назад</button>
-
     <div id="footer-text">
-
-      на правах реклами <a href="https://kadet.kh.ua/" target="_blank">Державного ліцею з посиленою військово-фізичною підготовкою «Слобожанський»</a>
-
+      на правах реклами 
+      <a href="https://kadet.kh.ua/" target="_blank">
+      Державного ліцею з посиленою військово-фізичною підготовкою «Слобожанський»</a>
     </div>
 
     <img id="preview-img" src="preview.png" alt="Превью">
-
     <img id="explosion-gif" src="explosion.gif" alt="Взрыв">
-
   </div>
-
 </div>
 
 <script src="script.js"></script>
-
 </body>
-
 </html>
