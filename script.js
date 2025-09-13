@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // --- Фиксированные точки мощности для точного воспроизведения звуков ---
+  const powerPoints = [80, 89, 98];
+
   const menu = document.getElementById("menu");
   const meterScreen = document.getElementById("meter-screen");
   const measureBtn = document.getElementById("measureBtn");
@@ -45,9 +48,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   buildScale();
 
+    // Функция случайного выбора одной из фиксированных точек
   function getRandomPowerAligned() {
-    const tick = Math.floor(Math.random() * (totalTicks + 1));
-    return Math.round(tick * (100 / totalTicks));
+    const idx = Math.floor(Math.random() * powerPoints.length);
+    return powerPoints[idx];
+  }
+
+  // --- остальной код остаётся как раньше ---
+  // buildScale(), setPointer(), playSoundForPower(), openMeter(), обработчики кнопок...
+
   }
 
   function setPointer(power) {
