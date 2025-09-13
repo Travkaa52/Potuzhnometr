@@ -113,6 +113,10 @@
             box-sizing: border-box;
             gap: 1.5rem;
         }
+        
+        #meter-screen.active {
+            display: flex;
+        }
 
         .section {
             background-color: rgba(45, 45, 45, 0.8);
@@ -143,22 +147,16 @@
             box-shadow: 0 0 5px #22c55e;
         }
 
-        .skull-icon {
+        .skull-icon, .settings-icon {
             position: absolute;
             right: 1rem;
             top: 1rem;
-            width: 30px;
-            height: 30px;
+            width: 20px;
+            height: 20px;
             filter: brightness(0.8) drop-shadow(0 0 5px #ff4500);
         }
         .settings-icon {
-            position: absolute;
-            top: 0.5rem;
-            right: 1.5rem;
-            width: 24px;
-            height: 24px;
             filter: brightness(0.8) drop-shadow(0 0 5px #00ffff);
-            cursor: pointer;
         }
 
         #meter-elements {
@@ -180,36 +178,33 @@
             width: 100%;
             height: 100%;
             display: flex;
-            align-items: flex-end;
-            gap: 2px;
+            border-radius: 0.5rem;
             overflow: hidden;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .scale-segment {
             flex-grow: 1;
-            width: 5px;
             height: 100%;
             transition: background-color 0.5s;
-            border-radius: 2px;
         }
         .segment-green { background-color: #22c55e; }
         .segment-yellow { background-color: #facc15; }
         .segment-orange { background-color: #fb923c; }
         .segment-red { background-color: #ef4444; }
-
+        
         #pointer {
             position: absolute;
             height: 100%;
             width: 5px;
-            background: transparent;
+            background: #ffffff;
             border-radius: 2px;
             transition: left 1s ease-in-out;
             top: 0;
             z-index: 11;
-            display: none;
+            box-shadow: 0 0 10px #ffffff;
         }
-        
+
         .scale-labels {
             display: flex;
             justify-content: space-between;
@@ -220,14 +215,6 @@
 
         #result-display {
             display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            align-items: flex-start;
-        }
-
-        .result-row {
-            display: flex;
-            width: 100%;
             gap: 1rem;
             align-items: flex-start;
         }
@@ -274,15 +261,21 @@
             text-align: right;
             width: 100%;
         }
-        #current-mode-btn {
+        #manual-mode-btn {
             background-color: #3b3b3b;
             color: white;
             padding: 0.5rem 0.8rem;
             border-radius: 9999px;
             font-size: 0.9rem;
             font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             white-space: nowrap;
+        }
+        #manual-mode-btn:hover {
+            background-color: #4b4b4b;
+            transform: scale(1.05);
         }
 
         #buttons-container {
@@ -309,12 +302,7 @@
         #measureBtn {
             background: linear-gradient(45deg, #22c55e, #16a34a);
             color: white;
-            display: none;
         }
-        #measureBtn.show {
-            display: block;
-        }
-
         #measureBtn:hover {
             background: linear-gradient(45deg, #16a34a, #22c55e);
             transform: scale(1.05);
@@ -331,33 +319,29 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.5);
         }
 
-        #explosion-gif {
+        #explosion-gif, #preview-img {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 400px;
-            height: 400px;
+            width: 150px;
             display: none;
             z-index: 20;
         }
-        #explosion-gif.show {
+        #explosion-gif.show, #preview-img.show {
             display: block;
         }
 
         .slider-container {
             width: 100%;
             margin-top: 1rem;
-            display: none;
+            display: flex;
             align-items: center;
             gap: 0.5rem;
             background-color: rgba(45, 45, 45, 0.8);
             border-radius: 1rem;
             padding: 1rem;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-        .slider-container.show {
-            display: flex;
         }
         .slider-min-label, .slider-max-label {
             font-size: 0.75rem;
@@ -401,94 +385,15 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             border: 2px solid #3b82f6;
         }
-
-        /* Modal styles */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            visibility: hidden;
-            opacity: 0;
-            transition: visibility 0s, opacity 0.5s;
-        }
-        .modal.show {
-            visibility: visible;
-            opacity: 1;
-        }
-        .modal-content {
-            background-color: #2d2d2d;
-            border-radius: 1rem;
-            padding: 2rem;
-            max-width: 350px;
-            width: 90%;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            text-align: left;
-            position: relative;
-        }
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-        }
-        .modal-close-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #a0a0a0;
-            cursor: pointer;
-        }
-        .mode-option {
-            background-color: #1a1a1a;
-            border-radius: 0.75rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-left: 5px solid transparent;
-            cursor: pointer;
-            transition: border-left 0.3s;
-        }
-        .mode-option.active {
-            border-left: 5px solid #ffde30;
-            box-shadow: 0 0 10px rgba(255, 222, 48, 0.5);
-        }
-        .mode-option h3 {
-            font-size: 1.125rem;
-            font-weight: bold;
-            color: #ffde30;
-        }
-        .mode-option p {
-            font-size: 0.9rem;
-            color: #d1d5db;
-        }
-        .modal-btn {
-            width: 100%;
-            padding: 1rem;
-            border-radius: 9999px;
-            background-color: #3b82f6;
-            color: white;
-            font-size: 1.125rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 1rem;
-        }
-
     </style>
 </head>
 <body>
 
 <div id="app">
     <div class="container">
-        <!-- Main menu screen to select meter type -->
-        <div id="menu">
+        
+
+<div id="menu">
             <h1>
                 <img src="ua-flag.png" alt="Прапор України" class="ua-flag">
                 Виберіть мемометр
@@ -500,8 +405,9 @@
             <button class="menu-btn" data-meter="2">Зрадометр</button>
         </div>
 
-        <!-- The main meter screen, initially hidden -->
-        <div id="meter-screen">
+        
+
+<div id="meter-screen">
             <h1 id="meterTitle" style="margin-bottom: 0;">
                 <img src="ua-flag.png" alt="Прапор України" class="ua-flag">
                 ПОТУЖНОМЕТР
@@ -525,60 +431,34 @@
             </div>
 
             <div id="result-display" class="section">
-                <div class="result-row">
-                    <div id="result-value-box">
-                        <span class="result-label">ПОКАЗНИК ПОТУЖНОСТІ</span>
-                        <div id="result">0%</div>
-                        <span class="result-label">МОДУЛЬ "ТЕРМОДАТА"</span>
-                    </div>
-                    <div id="mode-section">
-                        <img src="settings-icon.png" alt="Settings" class="settings-icon" id="settings-icon-btn">
-                        <span class="mode-label">РЕЖИМ</span>
-                        <span id="current-mode-btn">РУЧНИЙ</span>
-                    </div>
+                <div id="result-value-box">
+                    <span class="result-label">ПОКАЗНИК ПОТУЖНОСТІ</span>
+                    <div id="result">0%</div>
+                    <span class="result-label">МОДУЛЬ "ТЕРМОДАТА"</span>
+                </div>
+                <div id="mode-section">
+                    <span class="mode-label">РЕЖИМ</span>
+                    <button id="manual-mode-btn">РУЧНИЙ</button>
+                    <img src="settings-icon.png" alt="Settings" class="settings-icon" style="filter: invert(1);">
                 </div>
             </div>
 
-            <!-- Slider for manual mode, initially hidden -->
-            <div class="slider-container" id="slider-container">
+            
+
+<div class="slider-container">
                 <span class="slider-min-label">0</span>
                 <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
                 <span class="slider-max-label">100</span>
             </div>
 
             <div id="buttons-container">
-                <button id="measureBtn" class="measure-btn">Виміряти</button>
+                <button id="measureBtn">Виміряти</button>
                 <button id="backBtn">Назад</button>
             </div>
         </div>
 
-        <!-- Explosion GIF for high power readings -->
+        <img id="preview-img" src="preview.png" alt="Превью">
         <img id="explosion-gif" src="explosion.gif" alt="Взрыв">
-    </div>
-</div>
-
-<!-- Modal for mode selection -->
-<div id="mode-modal" class="modal">
-    <div class="modal-content">
-        <button class="modal-close-btn">&times;</button>
-        <h2 class="modal-title">РЕЖИМ ВИМІРЮВАННЯ</h2>
-        <div class="mode-option" data-mode="touch">
-            <h3>ДОТИК</h3>
-            <p>Управління короткими кліками в будь-якій точці екрану. Перший клік починає зростання, другий - зупиняє, третій - починає спадання.</p>
-        </div>
-        <div class="mode-option" data-mode="hold">
-            <h3>УТРИМАННЯ</h3>
-            <p>Утримуйте будь-яку точку екрану, щоб збільшувати потужність. Відпустіть, щоб вона знижувалася.</p>
-        </div>
-        <div class="mode-option" data-mode="random">
-            <h3>РАНДОМ</h3>
-            <p>Випадкове вимірювання потужності протягом заданого часу.</p>
-        </div>
-        <div class="mode-option" data-mode="manual">
-            <h3>РУЧНИЙ</h3>
-            <p>Ручний контроль рівня потужності за допомогою повзунка.</p>
-        </div>
-        <button id="select-mode-btn" class="modal-btn">ОБРАТИ</button>
     </div>
 </div>
 
@@ -588,31 +468,16 @@
     const meterTitle = document.getElementById('meterTitle');
     const measureBtn = document.getElementById('measureBtn');
     const backBtn = document.getElementById('backBtn');
+    const pointer = document.getElementById('pointer');
     const resultDiv = document.getElementById('result');
     const scale = document.getElementById('scale');
+    const previewImg = document.getElementById('preview-img');
     const explosionGif = document.getElementById('explosion-gif');
-    const sliderContainer = document.getElementById('slider-container');
-    const myRange = document.getElementById('myRange');
-    
-    const modeModal = document.getElementById('mode-modal');
-    const modalCloseBtns = document.querySelectorAll('.modal-close-btn');
-    const modeOptions = document.querySelectorAll('.mode-option');
-    const selectModeBtn = document.getElementById('select-mode-btn');
-    const currentModeBtn = document.getElementById('current-mode-btn');
-    const settingsIcon = document.getElementById('settings-icon-btn');
-    
-
     let currentMeterType = '1';
     let currentValue = 0;
-    let currentMode = 'manual';
-    let intervalId = null;
-    let touchState = 0;
     
-    // Custom sound for meter movement
-    const customSoundUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-    const measureSound = new Audio(customSoundUrl);
-
-    // Placeholder for other sound files (not included in this example)
+    // Замініть ці шляхи на ваші власні звукові файли.
+    // Створіть папку 'sounds' та розмістіть там ваші mp3 файли.
     const sounds = {
         1: {
             '80': 'sounds/meter1_3.mp3',
@@ -624,22 +489,110 @@
             '89': 'sounds/meter2_2.mp3',
             '98': 'sounds/meter2_3.mp3'
         },
+        'boo': 'sounds/boo.mp3',
         'explosion': 'sounds/explosion.mp3'
     };
-    
-    let previousValue = 0;
 
-    // Updates the visual meter and display value
-    function updateMeter(value) {
-        currentValue = value;
-        resultDiv.textContent = `${Math.round(currentValue)}%`;
+    // Функція для створення шкали
+    function generateScale() {
+        scale.innerHTML = '';
+        const segmentsData = [
+            { count: 4, color: 'segment-green' },
+            { count: 3, color: 'segment-yellow' },
+            { count: 2, color: 'segment-orange' },
+            { count: 2, color: 'segment-red' }
+        ];
+
+        segmentsData.forEach(segment => {
+            for (let i = 0; i < segment.count; i++) {
+                const div = document.createElement('div');
+                div.className = `scale-segment ${segment.color}`;
+                scale.appendChild(div);
+            }
+        });
+    }
+
+    // Функція для відтворення звуку
+    function playSoundForPower(meterId, power) {
+        for (const key in sounds[meterId]) {
+            if (Math.abs(power - Number(key)) <= 5) {
+                new Audio(sounds[meterId][key]).play().catch(() => {});
+            }
+        }
+    }
+
+    // Обробники подій для кнопок меню
+    document.querySelectorAll('.menu-btn').forEach(button => {
+        button.addEventListener('click', (event) => {
+            currentMeterType = event.target.dataset.meter;
+            menuDiv.style.display = 'none';
+            meterScreenDiv.classList.add('active');
+            resultDiv.textContent = '0%';
+            pointer.style.left = '0%';
+            previewImg.classList.remove('show');
+            explosionGif.classList.remove('show');
+            generateScale();
+
+            if (currentMeterType === '1') {
+                meterTitle.innerHTML = `<img src="ua-flag.png" alt="Прапор України" class="ua-flag"> ПОТУЖНОМЕТР`;
+            } else {
+                meterTitle.innerHTML = `<img src="ua-flag.png" alt="Прапор України" class="ua-flag"> ЗРАДОМЕТР`;
+            }
+        });
+    });
+
+    // Обробник подій для кнопки "Назад"
+    backBtn.addEventListener('click', () => {
+        menuDiv.style.display = 'block';
+        meterScreenDiv.classList.remove('active');
+        previewImg.classList.remove('show');
+        explosionGif.classList.remove('show');
+    });
+
+    // Обробник подій для кнопки "Виміряти"
+    measureBtn.addEventListener('click', () => {
+        const powerPoints = [
+            78, 79, 80, 81, 82, 87, 88, 89, 90, 91, 96, 97, 98, 99, 100
+        ];
+        const randomIdx = Math.floor(Math.random() * powerPoints.length);
+        currentValue = powerPoints[randomIdx];
+
+        const meterElementsWidth = scale.offsetWidth;
+        const pointerPosition = (currentValue / 100) * meterElementsWidth;
+        pointer.style.left = `${pointerPosition - (pointer.offsetWidth / 2)}px`;
+
+        resultDiv.textContent = `${currentValue}%`;
         
-        const segments = scale.children;
-        const totalSegments = segments.length;
-        const activeSegments = Math.round(totalSegments * (currentValue / 100));
-        
-        for (let i = 0; i < totalSegments; i++) {
-            if (i < activeSegments) {
-                if (i < 10) segments[i].style.backgroundColor = '#22c55e';
-                else if (i < 20) segments[i].style.backgroundColor = '#facc15';
-                else
+        playSoundForPower(currentMeterType, currentValue);
+
+        if (currentValue >= 98) {
+            previewImg.classList.add("show");
+            new Audio(sounds['boo']).play().catch(() => {});
+            setTimeout(() => {
+                previewImg.classList.remove("show");
+                explosionGif.classList.add("show");
+                new Audio(sounds['explosion']).play().catch(() => {});
+                setTimeout(() => {
+                    explosionGif.classList.remove("show");
+                }, 2000);
+            }, 2000);
+        } else {
+            previewImg.classList.remove("show");
+            explosionGif.classList.remove("show");
+        }
+    });
+
+    // Оновлення шкали при зміні розміру вікна
+    window.addEventListener('resize', generateScale);
+
+    window.onload = () => {
+        if (meterScreenDiv.classList.contains('active')) {
+            generateScale();
+        } else {
+            // Щоб шкала була згенерована при першому відкритті екрану вимірювання
+            // Можна викликати generateScale() при кожному відкритті екрану
+        }
+    };
+</script>
+</body>
+</html>
