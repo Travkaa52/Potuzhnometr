@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const meterScreen = document.getElementById("meter-screen");
   const measureBtn = document.getElementById("measureBtn");
   const backBtn = document.getElementById("backBtn");
+  const meterBg = document.getElementById("meter-bg");
 
   let currentMeter = 1;
 
@@ -60,12 +61,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Выбор метра
+  // Выбор мемометра
   document.querySelectorAll(".menu-btn").forEach(btn=>{
     btn.addEventListener("click",()=>{
       currentMeter = Number(btn.dataset.meter);
-      menu.style.display="none";
-      meterScreen.style.display="block";
+      menu.style.display = "none";
+      meterScreen.style.display = "block";
+      meterBg.style.display = "block"; // показываем фон
       setPointer(0);
       resultDiv.textContent = currentMeter===1?"Потужність: —":"Рівень зради: —";
     });
@@ -75,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   backBtn.addEventListener("click", ()=>{
     meterScreen.style.display="none";
     menu.style.display="flex";
+    meterBg.style.display="none"; // скрываем фон
     previewImg.classList.remove("show");
     explosionGif.classList.remove("show");
   });
