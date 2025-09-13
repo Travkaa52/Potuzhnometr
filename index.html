@@ -14,29 +14,32 @@
     <button class="menu-btn" data-meter="1">Потужнометр</button>
     <button class="menu-btn" data-meter="2">Зрадометр</button>
   </div>
+
+  <!-- Экран измерения -->
   <div id="meter-screen" style="display:none;">
-  <!-- Фоновая картинка прибора -->
-  <img id="meter-bg" src="device-bg.jpg" alt="Фон прибора">
+    <!-- Фоновая картинка прибора -->
+    <img id="meter-bg" src="device-bg.jpg" alt="Фон прибора">
 
-  <div id="meter-container">
-    <div id="ticks"></div>
-    <div id="pointer"></div>
+    <div id="meter-container">
+      <div id="ticks"></div>
+      <div id="pointer"></div>
+    </div>
+
+    <button id="measureBtn">Виміряти</button>
+    <button id="backBtn">Назад</button>
+
+    <div id="result"></div>
+
+    <div id="footer-text">
+      на правах реклами 
+      <a href="https://kadet.kh.ua/" target="_blank">
+      Державного ліцею з посиленою військово-фізичною підготовкою «Слобожанський»</a>
+    </div>
+
+    <img id="preview-img" src="preview.png" alt="Превью">
+    <img id="explosion-gif" src="explosion.gif" alt="Взрыв">
   </div>
-
-  <button id="measureBtn">Виміряти</button>
-  <button id="backBtn">Назад</button>
-
-  <div id="result"></div>
-
-  <div id="footer-text">
-    на правах реклами 
-    <a href="https://kadet.kh.ua/" target="_blank">
-    Державного ліцею з посиленою військово-фізичною підготовкою «Слобожанський»</a>
-  </div>
-
-  <img id="preview-img" src="preview.png" alt="Превью">
-  <img id="explosion-gif" src="explosion.gif" alt="Взрыв">
-  </div>
+</div>
 
 <script src="script.js"></script>
 </body>
