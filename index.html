@@ -487,9 +487,8 @@
 
 <div id="app">
     <div class="container">
-        
-
-<div id="menu">
+        <!-- Main menu screen to select meter type -->
+        <div id="menu">
             <h1>
                 <img src="ua-flag.png" alt="Прапор України" class="ua-flag">
                 Виберіть мемометр
@@ -501,9 +500,8 @@
             <button class="menu-btn" data-meter="2">Зрадометр</button>
         </div>
 
-        
-
-<div id="meter-screen">
+        <!-- The main meter screen, initially hidden -->
+        <div id="meter-screen">
             <h1 id="meterTitle" style="margin-bottom: 0;">
                 <img src="ua-flag.png" alt="Прапор України" class="ua-flag">
                 ПОТУЖНОМЕТР
@@ -541,9 +539,8 @@
                 </div>
             </div>
 
-            
-
-<div class="slider-container" id="slider-container">
+            <!-- Slider for manual mode, initially hidden -->
+            <div class="slider-container" id="slider-container">
                 <span class="slider-min-label">0</span>
                 <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
                 <span class="slider-max-label">100</span>
@@ -555,6 +552,7 @@
             </div>
         </div>
 
+        <!-- Explosion GIF for high power readings -->
         <img id="explosion-gif" src="explosion.gif" alt="Взрыв">
     </div>
 </div>
@@ -610,11 +608,11 @@
     let intervalId = null;
     let touchState = 0;
     
-    // Назва звуку: Імпульс Потужності
+    // Custom sound for meter movement
     const customSoundUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
     const measureSound = new Audio(customSoundUrl);
 
-    // Звукові файли
+    // Placeholder for other sound files (not included in this example)
     const sounds = {
         1: {
             '80': 'sounds/meter1_3.mp3',
@@ -631,6 +629,7 @@
     
     let previousValue = 0;
 
+    // Updates the visual meter and display value
     function updateMeter(value) {
         currentValue = value;
         resultDiv.textContent = `${Math.round(currentValue)}%`;
@@ -643,12 +642,4 @@
             if (i < activeSegments) {
                 if (i < 10) segments[i].style.backgroundColor = '#22c55e';
                 else if (i < 20) segments[i].style.backgroundColor = '#facc15';
-                else if (i < 30) segments[i].style.backgroundColor = '#fb923c';
-                else segments[i].style.backgroundColor = '#ef4444';
-            } else {
-                segments[i].style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-            }
-        }
-        
-        // Відтворення кастомного звуку
-        if (Math.round
+                else
