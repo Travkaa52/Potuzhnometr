@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentMeter = 1;
 
-  // Построение шкалы |||||||
+  // Построение шкалы
   for (let i = 0; i <= totalTicks; i++) {
     const tick = document.createElement("div");
     tick.className = "tick " + (i % 5 === 0 ? "long" : "short");
@@ -35,18 +35,23 @@ document.addEventListener("DOMContentLoaded", () => {
     pointer.style.left = left + "px";
   }
 
-  function measure() {
-    const power = Math.floor(Math.random()*101);
-    setPointer(power);
-    resultDiv.textContent = currentMeter===1 ?
-      `Потужність: ${power}%` : `Рівень зради: ${power}%`;
-
-    const pts = sounds[currentMeter];
-    [80,89,98].forEach(p=>{
-      if(power >= p && pts[p]) new Audio(pts[p]).play().catch(()=>{});
+  function playSoundForPower(meterId, power) {
+    const pts = sounds[meterId];
+    [80, 89, 98].forEach(p=>{
+      if(power >= p - 5 && power <= p + 5 && pts[p]) {
+        new Audio(pts[p]).play().catch(()=>{});
+      }
     });
+  }
 
-    if (power >= 98) {
+  function measure() {
+    const power = Math.floor(Math.random()*101); // 0–100%
+    setPointer(power);
+    resultDiv.textContent = currentMeter===1 ? `Потужність: ${power}%` : `Рівень зради: ${power}%`;
+
+    playSoundForPower(currentMeter, power);
+
+    if(power >= 98){
       previewImg.classList.add("show");
       new Audio("boo.mp3").play().catch(()=>{});
       setTimeout(()=>{
@@ -74,6 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   measureBtn.addEventListener("click", measure);
+
   backBtn.addEventListener("click", ()=>{
     meterScreen.style.display="none";
     menu.style.display="flex";
