@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Лінійний Потужномір</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
@@ -20,7 +19,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            min-height: 10vh;
         }
 
         @keyframes gradient-bg {
@@ -403,7 +402,7 @@
                 <div class="section-title">
                     <span class="status-dot"></span>
                     ШКАЛА ПОТУЖНОСТІ
-                    <img src="https://www.svgrepo.com/show/383182/skull-halloween.svg" alt="Skull" class="skull-icon">
+                    <img src="images.jpeg" alt="Череп" class="skull-icon">
                 </div>
                 <div id="scale"></div>
                 <div class="scale-labels">
@@ -420,6 +419,7 @@
                 </div>
                 <div id="mode-section">
                     <div id="mode-display">РЕЖИМ: <span id="mode-text">РАНДОМ</span></div>
+                    <img src="Screenshot_2025-09-14-01-12-00-633_com.potuzhnometr.jpg" alt="Налаштування" class="settings-icon">
                 </div>
             </div>
             
@@ -447,27 +447,9 @@
     
     let currentValue = 0;
 
-    // Створення синтезатора для звуків вимірювання
-    const synth = new Tone.Synth({
-        oscillator: { type: "square" },
-        envelope: {
-            attack: 0.01,
-            decay: 0.2,
-            sustain: 0,
-            release: 0.1
-        }
-    }).toDestination();
-    
-    // Створення синтезатора для фінального звуку
-    const finalSynth = new Tone.Synth({
-        oscillator: { type: "sine" },
-        envelope: {
-            attack: 0.1,
-            decay: 0.2,
-            sustain: 0.1,
-            release: 0.5
-        }
-    }).toDestination();
+    // Звукові ефекти
+    const measurementSound = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short_01.mp3');
+    const finalSound = new Audio('https://actions.google.com/sounds/v1/impacts/punch_with_whistle.mp3');
 
     function generateScale() {
         scale.innerHTML = '';
@@ -532,9 +514,11 @@
             
             if (currentMeterType === '1') {
                 meterTitle.innerHTML = `<img src="https://placehold.co/30x20/0057B8/FFD700?text=UA" alt="Прапор України" class="ua-flag"> ПОТУЖНОМЕТР`;
+                document.querySelector('.skull-icon').src = 'images.jpeg';
                 document.querySelector('.skull-icon').style.filter = 'brightness(0.8) drop-shadow(0 0 5px #ff4500)';
             } else {
                 meterTitle.innerHTML = `<img src="https://placehold.co/30x20/0057B8/FFD700?text=UA" alt="Прапор України" class="ua-flag"> ЗРАДОМЕТР`;
+                document.querySelector('.skull-icon').src = 'images.jpeg';
                 document.querySelector('.skull-icon').style.filter = 'brightness(0.8) drop-shadow(0 0 5px #00ffff)';
             }
             generateScale();
@@ -548,8 +532,8 @@
     });
 
     measureBtn.addEventListener('click', () => {
-        // Start the audio context on user interaction
-        Tone.start();
+        // Play the measurement sound
+        measurementSound.play();
 
         const powerPoints = [
             78, 79, 80, 81, 82, 87, 88, 89, 90, 91, 96, 97, 98, 99, 100
@@ -557,26 +541,11 @@
         const randomIdx = Math.floor(Math.random() * powerPoints.length);
         const randomValue = powerPoints[randomIdx];
 
-        // Play the "measuring" sound
-        const notes = ["C4", "E4", "G4", "A4"];
-        let time = Tone.now();
-        notes.forEach(note => {
-            synth.triggerAttackRelease(note, "8n", time);
-            time += 0.2;
-        });
-
-        // Update the UI and play the "final" sound after a delay
+        // Update the UI and play the final sound after the measurement sound finishes
         setTimeout(() => {
             updateMeter(randomValue);
-            // Play the final sound based on the result
-            if (randomValue >= 90) {
-                finalSynth.triggerAttackRelease("G4", "1s");
-            } else if (randomValue >= 80) {
-                finalSynth.triggerAttackRelease("D4", "1s");
-            } else {
-                finalSynth.triggerAttackRelease("C4", "1s");
-            }
-        }, notes.length * 200); // Delay matches the sound sequence length
+            finalSound.play();
+        }, measurementSound.duration * 1000);
     });
 </script>
 </body>
