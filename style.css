@@ -48,7 +48,7 @@ body {
 /* Фон прибора */
 #meter-bg {
   position: absolute;
-  top: 100px;
+  top: 200px;
   left: 50%;
   transform: translateX(-50%);
   width: 310px;
