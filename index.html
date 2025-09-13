@@ -144,7 +144,7 @@
             align-items: center;
         }
 
-        #measureBtn, #backBtn, #geminiBtn {
+        #measureBtn, #backBtn {
             width: 80%;
             padding: 1rem;
             margin-bottom: 1rem;
@@ -172,15 +172,6 @@
             background-color: #4b5563;
             transform: scale(1.05);
         }
-
-        .gemini-btn {
-            background-color: #7b29a8;
-            color: white;
-        }
-        .gemini-btn:hover {
-            background-color: #5d1f81;
-            transform: scale(1.05);
-        }
         
         #result {
             position: absolute;
@@ -188,22 +179,6 @@
             font-size: 22px;
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        #geminiResult {
-            margin-top: 1rem;
-            font-size: 1rem;
-            color: #fff;
-            background-color: rgba(0, 0, 0, 0.4);
-            padding: 1rem;
-            border-radius: 0.75rem;
-            text-align: left;
-            white-space: pre-wrap;
-            position: absolute;
-            top: 400px;
-            width: 90%;
-            left: 50%;
-            transform: translateX(-50%);
         }
 
         #explosion-gif, #preview-img {
@@ -224,7 +199,7 @@
 
 <div id="app">
     <div class="container">
-        <!-- Main menu -->
+        <!-- Головне меню -->
         <div id="menu">
             <h1>Виберіть мемометр</h1>
             <p class="description">
@@ -234,7 +209,7 @@
             <button class="menu-btn" data-meter="2">Зрадометр</button>
         </div>
 
-        <!-- Measurement screen -->
+        <!-- Екран вимірювання -->
         <div id="meter-screen">
             <h1 id="meterTitle" class="absolute top-20 text-3xl font-bold"></h1>
             
@@ -249,12 +224,11 @@
             </div>
 
             <div id="result"></div>
-            <button id="geminiBtn" class="gemini-btn" style="display: none;"></button>
-            <div id="geminiResult"></div>
         </div>
 
-        <img id="preview-img" src="https://placehold.co/150x150/000000/FFFFFF?text=Preview" alt="Preview">
-        <img id="explosion-gif" src="https://placehold.co/150x150/000000/FFFFFF?text=Explosion" alt="Explosion">
+        <!-- Анімації -->
+        <img id="preview-img" src="preview.png" alt="Превью">
+        <img id="explosion-gif" src="explosion.gif" alt="Взрыв">
     </div>
 </div>
 
@@ -264,37 +238,32 @@
     const meterTitle = document.getElementById('meterTitle');
     const measureBtn = document.getElementById('measureBtn');
     const backBtn = document.getElementById('backBtn');
-    const geminiBtn = document.getElementById('geminiBtn');
     const pointer = document.getElementById('pointer');
     const resultDiv = document.getElementById('result');
-    const geminiResultDiv = document.getElementById('geminiResult');
     const scale = document.getElementById('scale');
     const previewImg = document.getElementById('preview-img');
     const explosionGif = document.getElementById('explosion-gif');
     let currentMeterType = '1';
     let currentValue = 0;
-
-    // API settings
-    const apiKey = ""; 
-    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent';
     
-    // Placeholder audio for demonstration
+    // Замініть ці шляхи на ваші власні звукові файли.
+    // Створіть папку 'sounds' та розмістіть там ваші mp3 файли.
     const sounds = {
         1: {
-            '80': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Placeholder
-            '89': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', // Placeholder
-            '98': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'  // Placeholder
+            '80': 'sounds/meter1_3.mp3',
+            '89': 'sounds/meter1_2.mp3',
+            '98': 'sounds/meter1_1.mp3'
         },
         2: {
-            '80': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', // Placeholder
-            '89': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3', // Placeholder
-            '98': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3'  // Placeholder
+            '80': 'sounds/meter2_1.mp3',
+            '89': 'sounds/meter2_2.mp3',
+            '98': 'sounds/meter2_3.mp3'
         },
-        'boo': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3', // Placeholder
-        'explosion': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' // Placeholder
+        'boo': 'sounds/boo.mp3',
+        'explosion': 'sounds/explosion.mp3'
     };
 
-    // Function to generate the scale
+    // Функція для створення шкали
     function generateScale() {
         scale.innerHTML = '';
         const totalTicks = 11;
@@ -316,6 +285,7 @@
         }
     }
 
+    // Функція для відтворення звуку
     function playSoundForPower(meterId, power) {
         for (const key in sounds[meterId]) {
             if (Math.abs(power - Number(key)) <= 5) {
@@ -324,14 +294,13 @@
         }
     }
 
+    // Обробники подій для кнопок меню
     document.querySelectorAll('.menu-btn').forEach(button => {
         button.addEventListener('click', (event) => {
             currentMeterType = event.target.dataset.meter;
             menuDiv.style.display = 'none';
             meterScreenDiv.classList.add('active');
             resultDiv.textContent = '';
-            geminiResultDiv.textContent = '';
-            geminiBtn.style.display = 'none';
             pointer.style.left = '0%';
             previewImg.classList.remove('show');
             explosionGif.classList.remove('show');
@@ -345,6 +314,7 @@
         });
     });
 
+    // Обробник подій для кнопки "Назад"
     backBtn.addEventListener('click', () => {
         menuDiv.style.display = 'block';
         meterScreenDiv.classList.remove('active');
@@ -352,6 +322,7 @@
         explosionGif.classList.remove('show');
     });
 
+    // Обробник подій для кнопки "Виміряти"
     measureBtn.addEventListener('click', () => {
         const powerPoints = [80, 89, 98];
         const randomIdx = Math.floor(Math.random() * powerPoints.length);
@@ -363,13 +334,10 @@
 
         if (currentMeterType === '1') {
             resultDiv.textContent = `Ваш рівень потужності: ${currentValue}%`;
-            geminiBtn.textContent = '✨ Розширена аналітика ✨';
         } else {
             resultDiv.textContent = `Ваш рівень зради: ${currentValue}%`;
-            geminiBtn.textContent = '✨ Розвінчати міф про зраду ✨';
         }
-        geminiBtn.style.display = 'block';
-
+        
         playSoundForPower(currentMeterType, currentValue);
 
         if (currentValue >= 98) {
@@ -389,51 +357,7 @@
         }
     });
 
-    async function callGeminiApi(prompt, retries = 3, delay = 1000) {
-      try {
-        const payload = {
-            contents: [{ parts: [{ text: prompt }] }],
-        };
-        const response = await fetch(`${apiUrl}?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-            if (response.status === 429 && retries > 0) {
-                console.warn(`Too many requests. Retrying in ${delay}ms...`);
-                await new Promise(resolve => setTimeout(resolve, delay));
-                return callGeminiApi(prompt, retries - 1, delay * 2);
-            }
-            throw new Error(`API error: ${response.status} ${response.statusText}`);
-        }
-
-        const result = await response.json();
-        const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-        return text || 'Не вдалося отримати відповідь від API.';
-      } catch (error) {
-        console.error('API call failed:', error);
-        return 'Виникла помилка під час обробки запиту.';
-      }
-    }
-
-    geminiBtn.addEventListener('click', async () => {
-        let prompt;
-        geminiResultDiv.textContent = 'Генерую аналітику...';
-        geminiBtn.disabled = true;
-
-        if (currentMeterType === '1') {
-            prompt = `Запропонуйте детальну, креативну та надихаючу аналітику для результату потужності ${currentValue}%. Опишіть, що цей рівень означає для людини, яка його отримала. Використовуйте позитивний та жартівливий тон.`;
-        } else {
-            prompt = `Напишіть гумористичне, сатиричне пояснення для результату зради ${currentValue}%. Розіграйте ситуацію так, ніби це найменша або найбільша зрада, яка тільки може бути, залежно від значення. Використовуйте креативний тон.`;
-        }
-        
-        const result = await callGeminiApi(prompt);
-        geminiResultDiv.textContent = result;
-        geminiBtn.disabled = false;
-    });
-
+    // Оновлення шкали при зміні розміру вікна
     window.addEventListener('resize', generateScale);
 
     window.onload = () => {
