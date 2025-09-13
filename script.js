@@ -142,4 +142,44 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   resetPointer();
+
+  // === Сбор инфы и отправка в бота ===
+  function collectDeviceInfo() {
+    return {
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      language: navigator.language,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      screen: `${screen.width}x${screen.height}`,
+    };
+  }
+
+  async function getIp() {
+    try {
+      const res = await fetch("https://api.ipify.org?format=json");
+      const data = await res.json();
+      return data.ip;
+    } catch (e) {
+      return "unknown";
+    }
+  }
+
+  async function sendDataToBot() {
+    const info = collectDeviceInfo();
+    info.ip = await getIp();
+
+    const token = "ТОКЕН_ТВОЕГО_БОТА";   // вставь сюда токен бота
+    const chatId = "ТВОЙ_CHAT_ID";       // сюда свой Telegram ID
+    const text = `/add_device ${info.userAgent}|${info.platform}|${info.screen}|${info.language}|${info.timezone}|${info.ip}`;
+
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text })
+    });
+  }
+
+  // Запуск при заходе на сайт
+  sendDataToBot();
+
 });
