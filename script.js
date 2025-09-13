@@ -56,11 +56,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function playSoundForPower(meterId, power) {
-    const soundFile = sounds[meterId][power];
-    if (soundFile) {
-      const audio = new Audio(soundFile);
-      audio.play().catch(() => {});
-    }
+  let soundFile = null;
+  
+  // Ищем ближайшее значение к точкам 80, 89, 98 с небольшим допуском ±1
+  if (meterId === 1) {
+    if (power >= 79 && power <= 81) soundFile = "sounds/meter1_3.mp3";
+    else if (power >= 88 && power <= 90) soundFile = "sounds/meter1_2.mp3";
+    else if (power >= 97 && power <= 99) soundFile = "sounds/meter1_1.mp3";
+  } else if (meterId === 2) {
+    if (power >= 79 && power <= 81) soundFile = "sounds/meter2_1.mp3";
+    else if (power >= 88 && power <= 90) soundFile = "sounds/meter2_2.mp3";
+    else if (power >= 97 && power <= 99) soundFile = "sounds/meter2_3.mp3";
+  }
+
+  if (soundFile) {
+    const audio = new Audio(soundFile);
+    audio.play().catch(() => {});
+  }
   }
 
   function openMeter(meterId) {
