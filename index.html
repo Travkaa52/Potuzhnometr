@@ -12,7 +12,9 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #1a1a1a;
+            background: linear-gradient(-45deg, #1d1d1d, #0d0d0d, #1a1a1a, #0d0d0d);
+            background-size: 400% 400%;
+            animation: gradient-bg 15s ease infinite;
             color: #ffffff;
             display: flex;
             justify-content: center;
@@ -20,35 +22,45 @@
             min-height: 100vh;
         }
 
-        #app {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
+        @keyframes gradient-bg {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .container {
             width: 90%;
             max-width: 400px;
-            padding: 1.5rem; /* Зменшив відступи */
+            padding: 2rem;
             border-radius: 1.5rem;
-            backdrop-filter: blur(10px);
-            background-color: rgba(0, 0, 0, 0.6); /* Темніший фон */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: rgba(30, 30, 30, 0.8);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             text-align: center;
             color: #ffffff;
             position: relative;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem; /* Відстань між секціями */
+            gap: 2rem;
+            transform: perspective(1000px) rotateX(1deg);
+            transition: transform 0.5s ease;
+        }
+
+        .container:hover {
+            transform: perspective(1000px) rotateX(0deg);
         }
 
         h1 {
             font-size: 2.25rem;
             font-weight: 700;
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -60,6 +72,7 @@
             height: 20px;
             border-radius: 3px;
             object-fit: cover;
+            border: 1px solid #ffffff;
         }
 
         .description {
@@ -78,13 +91,14 @@
             font-size: 1.125rem;
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         
         .menu-btn:hover {
             background-color: #2563eb;
-            transform: translateY(-2px);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
         }
 
         /* Meter-specific styles */
@@ -94,14 +108,10 @@
             align-items: center;
             position: relative;
             width: 100%;
-            height: auto; /* Автоматична висота */
-            background-image: url('device-bg.jpg');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            padding: 2rem 1rem; /* Відступи для фонового зображення */
+            height: auto;
+            padding: 2rem 1rem;
             box-sizing: border-box;
-            gap: 1rem; /* Відстань між секціями на екрані вимірювання */
+            gap: 1.5rem;
         }
         
         #meter-screen.active {
@@ -109,13 +119,15 @@
         }
 
         .section {
-            background-color: rgba(30, 30, 30, 0.8); /* Темніші блоки */
-            border-radius: 1rem;
-            padding: 1rem;
+            background-color: rgba(45, 45, 45, 0.8);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
             width: 100%;
             box-sizing: border-box;
             text-align: left;
             position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .section-title {
@@ -131,23 +143,26 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: #22c55e; /* Зелений */
+            background-color: #22c55e;
+            box-shadow: 0 0 5px #22c55e;
         }
 
-        .skull-icon {
+        .skull-icon, .settings-icon {
             position: absolute;
             right: 1rem;
             top: 1rem;
             width: 20px;
             height: 20px;
-            filter: invert(1); /* Для білого кольору, якщо іконка чорна */
+            filter: brightness(0.8) drop-shadow(0 0 5px #ff4500);
+        }
+        .settings-icon {
+            filter: brightness(0.8) drop-shadow(0 0 5px #00ffff);
         }
 
-        /* Container for the scale and pointer */
         #meter-elements {
             position: relative;
             width: 100%;
-            height: 40px; /* Збільшена висота шкали */
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -164,7 +179,8 @@
             height: 100%;
             display: flex;
             border-radius: 0.5rem;
-            overflow: hidden; /* Щоб закруглення працювали */
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .scale-segment {
@@ -172,21 +188,21 @@
             height: 100%;
             transition: background-color 0.5s;
         }
-        .segment-green { background-color: #22c55e; } /* Зелений */
-        .segment-yellow { background-color: #facc15; } /* Жовтий */
-        .segment-orange { background-color: #fb923c; } /* Помаранчевий */
-        .segment-red { background-color: #ef4444; } /* Червоний */
+        .segment-green { background-color: #22c55e; }
+        .segment-yellow { background-color: #facc15; }
+        .segment-orange { background-color: #fb923c; }
+        .segment-red { background-color: #ef4444; }
         
-        /* Pointer */
         #pointer {
             position: absolute;
-            height: 100%; /* Висота по шкалі */
+            height: 100%;
             width: 5px;
-            background: #ffffff; /* Білий колір для вказівника */
+            background: #ffffff;
             border-radius: 2px;
             transition: left 1s ease-in-out;
             top: 0;
             z-index: 11;
+            box-shadow: 0 0 10px #ffffff;
         }
 
         .scale-labels {
@@ -200,11 +216,11 @@
         #result-display {
             display: flex;
             gap: 1rem;
-            align-items: flex-start; /* Вирівнювання елементів вгорі */
+            align-items: flex-start;
         }
 
         #result-value-box {
-            background-color: #2d2d2d; /* Темніший фон для значення */
+            background-color: #2d2d2d;
             border-radius: 0.5rem;
             padding: 1rem;
             flex-grow: 1;
@@ -213,14 +229,17 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 120px; /* Фіксована висота */
+            height: 120px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
         }
 
         #result {
-            font-size: 4rem; /* Більший розмір шрифту */
+            font-size: 4rem;
             font-weight: bold;
-            color: #ef4444; /* Червоний колір, як на фото */
+            color: #ef4444;
             line-height: 1;
+            text-shadow: 0 0 10px #ef4444;
         }
         
         .result-label {
@@ -230,11 +249,11 @@
         }
 
         #mode-section {
-            width: 100px; /* Фіксована ширина для кнопки "Ручний" */
+            width: 100px;
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            align-items: flex-end; /* Вирівнювання по правому краю */
+            align-items: flex-end;
         }
         .mode-label {
             font-size: 0.8rem;
@@ -243,57 +262,61 @@
             width: 100%;
         }
         #manual-mode-btn {
-            background-color: #3b3b3b; /* Сірий колір кнопки */
+            background-color: #3b3b3b;
             color: white;
             padding: 0.5rem 0.8rem;
             border-radius: 9999px;
             font-size: 0.9rem;
             font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.2s;
-            white-space: nowrap; /* Щоб текст не переносився */
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
         }
         #manual-mode-btn:hover {
             background-color: #4b4b4b;
+            transform: scale(1.05);
         }
 
-        /* Buttons */
         #buttons-container {
             display: flex;
-            justify-content: space-between; /* Рознести кнопки по краях */
+            justify-content: space-between;
             width: 100%;
             margin-top: 1.5rem;
-            gap: 1rem; /* Відстань між кнопками */
+            gap: 1rem;
         }
 
         #measureBtn, #backBtn {
             flex-grow: 1;
-            padding: 0.8rem 1.5rem; /* Зменшив розмір */
+            padding: 0.8rem 1.5rem;
             border-radius: 9999px;
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            font-size: 0.9rem; /* Менший шрифт */
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            font-size: 0.9rem;
             white-space: nowrap;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
         #measureBtn {
-            background-color: #22c55e; /* Зелений */
+            background: linear-gradient(45deg, #22c55e, #16a34a);
             color: white;
         }
         #measureBtn:hover {
-            background-color: #16a34a;
+            background: linear-gradient(45deg, #16a34a, #22c55e);
             transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 0 15px #22c55e;
         }
         
         #backBtn {
-            background-color: #6b7280;
+            background: linear-gradient(45deg, #6b7280, #4b5563);
             color: white;
         }
         #backBtn:hover {
-            background-color: #4b5563;
+            background: linear-gradient(45deg, #4b5563, #6b7280);
             transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
         }
 
         #explosion-gif, #preview-img {
@@ -309,13 +332,16 @@
             display: block;
         }
 
-        /* Налаштування слайдера */
         .slider-container {
             width: 100%;
             margin-top: 1rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            background-color: rgba(45, 45, 45, 0.8);
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
         }
         .slider-min-label, .slider-max-label {
             font-size: 0.75rem;
@@ -323,7 +349,7 @@
         }
         .slider {
             -webkit-appearance: none;
-            width: calc(100% - 30px); /* Додайте відступи, якщо є мітки min/max */
+            width: calc(100% - 30px);
             height: 8px;
             background: #d3d3d3;
             outline: none;
@@ -347,7 +373,7 @@
             background: #ffffff;
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            border: 2px solid #3b82f6; /* Колір обідка */
+            border: 2px solid #3b82f6;
         }
 
         .slider::-moz-range-thumb {
@@ -392,7 +418,7 @@
                 <div class="section-title">
                     <span class="status-dot"></span>
                     ШКАЛА ПОТУЖНОСТІ
-                    <img src="skull-icon.png" alt="Skull" class="skull-icon" style="filter: invert(1);">
+                    <img src="skull-icon.png" alt="Skull" class="skull-icon">
                 </div>
                 <div id="meter-elements">
                     <div id="scale"></div>
@@ -413,7 +439,7 @@
                 <div id="mode-section">
                     <span class="mode-label">РЕЖИМ</span>
                     <button id="manual-mode-btn">РУЧНИЙ</button>
-                    <img src="settings-icon.png" alt="Settings" style="width: 24px; height: 24px; filter: invert(1); margin-top: 10px;">
+                    <img src="settings-icon.png" alt="Settings" class="settings-icon" style="filter: invert(1);">
                 </div>
             </div>
 
@@ -501,7 +527,7 @@
             currentMeterType = event.target.dataset.meter;
             menuDiv.style.display = 'none';
             meterScreenDiv.classList.add('active');
-            resultDiv.textContent = '0%'; // Скидаємо значення
+            resultDiv.textContent = '0%';
             pointer.style.left = '0%';
             previewImg.classList.remove('show');
             explosionGif.classList.remove('show');
@@ -525,14 +551,13 @@
 
     // Обробник подій для кнопки "Виміряти"
     measureBtn.addEventListener('click', () => {
-        // Розширили діапазон значень для більшої випадковості
         const powerPoints = [
             78, 79, 80, 81, 82, 87, 88, 89, 90, 91, 96, 97, 98, 99, 100
         ];
         const randomIdx = Math.floor(Math.random() * powerPoints.length);
         currentValue = powerPoints[randomIdx];
 
-        const meterElementsWidth = scale.offsetWidth; // Використовуємо ширину шкали для розрахунку
+        const meterElementsWidth = scale.offsetWidth;
         const pointerPosition = (currentValue / 100) * meterElementsWidth;
         pointer.style.left = `${pointerPosition - (pointer.offsetWidth / 2)}px`;
 
@@ -560,7 +585,6 @@
     // Оновлення шкали при зміні розміру вікна
     window.addEventListener('resize', generateScale);
 
-    // Ініціалізація
     window.onload = () => {
         if (meterScreenDiv.classList.contains('active')) {
             generateScale();
