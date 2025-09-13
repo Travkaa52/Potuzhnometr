@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Лінійний Потужномір</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
@@ -27,7 +28,7 @@
                 background-position: 0% 50%;
             }
             50% {
-                background-position: 100% 50%;;
+                background-position: 100% 50%;
             }
             100% {
                 background-position: 0% 50%;
@@ -373,93 +374,13 @@
         #explosion-gif.show, #preview-img.show {
             display: block;
         }
-
-        /* Modal styles */
-        #mode-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-        #mode-modal.show {
-            display: flex;
-        }
-        .modal-content {
-            background-color: #2d2d2d;
-            border-radius: 1.5rem;
-            padding: 2rem;
-            width: 90%;
-            max-width: 350px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
-            position: relative;
-            text-align: left;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-header h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        .modal-close-btn {
-            background: none;
-            border: none;
-            color: #9ca3af;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .modal-close-btn:hover {
-            color: #ffffff;
-        }
-        .mode-option-card {
-            background-color: #3b3b3b;
-            border-radius: 0.75rem;
-            padding: 1rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .mode-option-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        .mode-option-card.active {
-            background-color: #5d5d5d;
-            border: 2px solid #3b82f6;
-        }
-        .mode-option-card h3 {
-            font-size: 1.125rem;
-            font-weight: 700;
-        }
-        .mode-option-card p {
-            font-size: 0.875rem;
-            color: #a0a0a0;
-        }
-        
     </style>
 </head>
 <body>
 
 <div id="app">
     <div class="container">
-        
-
-<div id="menu">
+        <div id="menu">
             <h1>
                 <img src="https://placehold.co/30x20/0057B8/FFD700?text=UA" alt="Прапор України" class="ua-flag">
                 Виберіть мемометр
@@ -470,16 +391,14 @@
             <button class="menu-btn" data-meter="1">Потужнометр</button>
             <button class="menu-btn" data-meter="2">Зрадометр</button>
         </div>
-
         
-
-<div id="meter-screen">
+        <div id="meter-screen">
             <h1 id="meterTitle" style="margin-bottom: 0;">
                 <img src="https://placehold.co/30x20/0057B8/FFD700?text=UA" alt="Прапор України" class="ua-flag">
                 ПОТУЖНОМЕТР
             </h1>
             <p style="font-size: 0.75rem; color: #a0a0a0; margin-top: 0.25rem;">FM-V2.3.0 ПУСК 100 МЛН</p>
-
+            
             <div class="section">
                 <div class="section-title">
                     <span class="status-dot"></span>
@@ -501,55 +420,17 @@
                 </div>
                 <div id="mode-section">
                     <div id="mode-display">РЕЖИМ: <span id="mode-text">РАНДОМ</span></div>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="settings-icon" id="settings-icon">
-                        <path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.697.665-1.84 1.579C8.96 4.855 7.668 5.75 6.44 6.645l-1.42.994a1.819 1.819 0 0 0-.617 2.228l.944 1.705a1.816 1.816 0 0 0 .193.796 3.637 3.637 0 0 1 .947 1.801 3.637 3.637 0 0 1-.947 1.801 1.816 1.816 0 0 0-.193.796l-.945 1.705a1.819 1.819 0 0 0 .617 2.228l1.42.994c1.228.895 2.52 1.79 3.197 2.222.143.914.923 1.579 1.84 1.579h1.84c.917 0 1.697-.665 1.84-1.579.627-.406 1.92-1.301 3.148-2.222l1.42-.994a1.819 1.819 0 0 0 .617-2.228l-.944-1.705a1.816 1.816 0 0 0-.193-.796 3.637 3.637 0 0 1-.947-1.801 3.637 3.637 0 0 1 .947-1.801 1.816 1.816 0 0 0 .193-.796l.945-1.705a1.819 1.819 0 0 0-.617-2.228l-1.42-.994c-1.228-.895-2.52-1.79-3.197-2.222A1.819 1.819 0 0 0 12.922 2.25h-1.84Zm-1.838 9.375a2.25 2.25 0 1 0 4.5 0 2.25 2.25 0 0 0-4.5 0Z" clip-rule="evenodd" />
-                    </svg>
                 </div>
             </div>
-
-            <div class="slider-container" id="slider-container">
-                <span class="slider-min-label">0</span>
-                <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
-                <span class="slider-max-label">100</span>
-            </div>
-
+            
             <div id="buttons-container">
                 <button id="measureBtn">Виміряти</button>
                 <button id="backBtn">Назад</button>
             </div>
         </div>
-
+        
         <img id="preview-img" src="https://placehold.co/150x150/000000/FFFFFF?text=Preview" alt="Превью">
         <img id="explosion-gif" src="https://placehold.co/150x150/000000/FFFFFF?text=Explosion" alt="Взрыв">
-    </div>
-</div>
-
-<!-- Modal for mode selection -->
-<div id="mode-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>РЕЖИМ ВИМІРЮВАННЯ</h2>
-            <button class="modal-close-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="mode-option-card" data-mode="TOUCH">
-                <h3>ДОТИК</h3>
-                <p>Управління короткими кліками в будь-якій точці екрану. Перший клік починає зростання, другий - зупиняє, третій - починає спадання.</p>
-            </div>
-            <div class="mode-option-card" data-mode="HOLD">
-                <h3>УТРИМАННЯ</h3>
-                <p>Утримуйте будь-яку точку екрану, щоб збільшувати потужність. Відпустіть, щоб вона знижувалася.</p>
-            </div>
-            <div class="mode-option-card" data-mode="RANDOM">
-                <h3>РАНДОМ</h3>
-                <p>Випадкове вимірювання потужності протягом заданого часу.</p>
-            </div>
-            <div class="mode-option-card" data-mode="MANUAL">
-                <h3>РУЧНИЙ</h3>
-                <p>Ручний контроль рівня потужності за допомогою повзунка.</p>
-            </div>
-        </div>
-        <button class="menu-btn" id="modal-select-btn">ОБРАТИ</button>
     </div>
 </div>
 
@@ -563,35 +444,30 @@
     const scale = document.getElementById('scale');
     const previewImg = document.getElementById('preview-img');
     const explosionGif = document.getElementById('explosion-gif');
-    const settingsIcon = document.getElementById('settings-icon');
-    const modeModal = document.getElementById('mode-modal');
-    const modalCloseBtn = document.querySelector('.modal-close-btn');
-    const modeText = document.getElementById('mode-text');
-    const sliderContainer = document.getElementById('slider-container');
-    const myRange = document.getElementById('myRange');
-    const modeOptionCards = document.querySelectorAll('.mode-option-card');
-    const modalSelectBtn = document.getElementById('modal-select-btn');
     
-    let currentMeterType = '1';
     let currentValue = 0;
-    let currentMode = 'RANDOM';
-    let meterInterval;
-    let touchClickCount = 0;
+
+    // Створення синтезатора для звуків вимірювання
+    const synth = new Tone.Synth({
+        oscillator: { type: "square" },
+        envelope: {
+            attack: 0.01,
+            decay: 0.2,
+            sustain: 0,
+            release: 0.1
+        }
+    }).toDestination();
     
-    // const sounds = {
-    //     1: {
-    //         '80': 'sounds/meter1_3.mp3',
-    //         '89': 'sounds/meter1_2.mp3',
-    //         '98': 'sounds/meter1_1.mp3'
-    //     },
-    //     2: {
-    //         '80': 'sounds/meter2_1.mp3',
-    //         '89': 'sounds/meter2_2.mp3',
-    //         '98': 'sounds/meter2_3.mp3'
-    //     },
-    //     'boo': 'sounds/boo.mp3',
-    //     'explosion': 'sounds/explosion.mp3'
-    // };
+    // Створення синтезатора для фінального звуку
+    const finalSynth = new Tone.Synth({
+        oscillator: { type: "sine" },
+        envelope: {
+            attack: 0.1,
+            decay: 0.2,
+            sustain: 0.1,
+            release: 0.5
+        }
+    }).toDestination();
 
     function generateScale() {
         scale.innerHTML = '';
@@ -611,4 +487,97 @@
             if (index < activeBars) {
                 bar.classList.add('active');
                 if (value < 50) {
-                    bar.classLi
+                    bar.classList.remove('yellow', 'red');
+                    bar.classList.add('green');
+                } else if (value < 80) {
+                    bar.classList.remove('green', 'red');
+                    bar.classList.add('yellow');
+                } else {
+                    bar.classList.remove('green', 'yellow');
+                    bar.classList.add('red');
+                }
+            } else {
+                bar.classList.remove('active', 'green', 'yellow', 'red');
+            }
+        });
+    }
+
+    function updateResultDisplay(value) {
+        resultDiv.textContent = `${value}%`;
+        if (value >= 98) {
+            previewImg.style.display = "block";
+            explosionGif.style.display = "block";
+            setTimeout(() => {
+                previewImg.style.display = "none";
+                explosionGif.style.display = "none";
+            }, 2000);
+        } else {
+            previewImg.style.display = "none";
+            explosionGif.style.display = "none";
+        }
+    }
+
+    function updateMeter(value) {
+        currentValue = value;
+        updateScaleUI(currentValue);
+        updateResultDisplay(currentValue);
+    }
+    
+    document.querySelectorAll('.menu-btn').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const currentMeterType = event.target.dataset.meter;
+            menuDiv.style.display = 'none';
+            meterScreenDiv.classList.add('active');
+            updateMeter(0);
+            
+            if (currentMeterType === '1') {
+                meterTitle.innerHTML = `<img src="https://placehold.co/30x20/0057B8/FFD700?text=UA" alt="Прапор України" class="ua-flag"> ПОТУЖНОМЕТР`;
+                document.querySelector('.skull-icon').style.filter = 'brightness(0.8) drop-shadow(0 0 5px #ff4500)';
+            } else {
+                meterTitle.innerHTML = `<img src="https://placehold.co/30x20/0057B8/FFD700?text=UA" alt="Прапор України" class="ua-flag"> ЗРАДОМЕТР`;
+                document.querySelector('.skull-icon').style.filter = 'brightness(0.8) drop-shadow(0 0 5px #00ffff)';
+            }
+            generateScale();
+        });
+    });
+
+    backBtn.addEventListener('click', () => {
+        menuDiv.style.display = 'block';
+        meterScreenDiv.classList.remove('active');
+        updateMeter(0);
+    });
+
+    measureBtn.addEventListener('click', () => {
+        // Start the audio context on user interaction
+        Tone.start();
+
+        const powerPoints = [
+            78, 79, 80, 81, 82, 87, 88, 89, 90, 91, 96, 97, 98, 99, 100
+        ];
+        const randomIdx = Math.floor(Math.random() * powerPoints.length);
+        const randomValue = powerPoints[randomIdx];
+
+        // Play the "measuring" sound
+        const notes = ["C4", "E4", "G4", "A4"];
+        let time = Tone.now();
+        notes.forEach(note => {
+            synth.triggerAttackRelease(note, "8n", time);
+            time += 0.2;
+        });
+
+        // Update the UI and play the "final" sound after a delay
+        setTimeout(() => {
+            updateMeter(randomValue);
+            // Play the final sound based on the result
+            if (randomValue >= 90) {
+                finalSynth.triggerAttackRelease("G4", "1s");
+            } else if (randomValue >= 80) {
+                finalSynth.triggerAttackRelease("D4", "1s");
+            } else {
+                finalSynth.triggerAttackRelease("C4", "1s");
+            }
+        }, notes.length * 200); // Delay matches the sound sequence length
+    });
+</script>
+</body>
+</html>
