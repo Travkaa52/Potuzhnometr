@@ -416,7 +416,7 @@
         <div id="meter-screen" class="hidden">
             <div class="title-section">
                 <h1 id="meterTitle"></h1>
-                <p class="description">FM-V2.3.0 ПУСК 100 МЛН</p>
+                <p class="description">UA-V2.3.0 PTJNMTR100</p>
             </div>
 
             <div class="section">
@@ -488,6 +488,7 @@
 <audio id="meter1_1" src="sounds/meter1_1.mp3" preload="auto"></audio>
 <audio id="meter1_2" src="sounds/meter1_2.mp3" preload="auto"></audio>
 <audio id="meter1_3" src="sounds/meter1_3.mp3" preload="auto"></audio>
+<audio id="meter1_4" src="sounds/meter1_4.mp3" preload="auto"></audio>
 
 <audio id="meter2_1" src="sounds/meter2_1.mp3" preload="auto"></audio>
 <audio id="meter2_2" src="sounds/meter2_2.mp3" preload="auto"></audio>
@@ -521,6 +522,7 @@ const uaFlagSvg = `<img src="ua-flag.png" alt="Прапор України" clas
 const meter1_1 = document.getElementById('meter1_1');
 const meter1_2 = document.getElementById('meter1_2');
 const meter1_3 = document.getElementById('meter1_3');
+const meter1_3 = document.getElementById('meter1_4');
 const meter2_1 = document.getElementById('meter2_1');
 const meter2_2 = document.getElementById('meter2_2');
 const meter2_3 = document.getElementById('meter2_3');
@@ -528,7 +530,7 @@ const radia = document.getElementById('radia');
 
 // SVG-иконки
 const skullIconSvg = `<img src="skull-icon.png" alt="Череп" class="w-6 h-6">`;
-const zradaIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="filter: drop-shadow(0 0 5px #00ffff);"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.875 9a.75.75 0 0 0 0 1.5h.75v1.875a.75.75 0 0 0 1.5 0v-2.25a.75.75 0 0 0-.75-.75h-1.5ZM12 17.25a.75.75 0 0 0 .75-.75V12a.75.75 0 0 0-1.5 0v4.5c0 .414.336.75.75.75Z" clip-rule="evenodd" /></svg>`;
+const zradaIconSvg = `<img src="" alt="Череп" class="w-6 h-6">`;
 
 let currentMeterType = '';
 
@@ -671,7 +673,9 @@ measureBtn.addEventListener('click', () => {
             } catch (e) {}
         }
 
-        if (currentMeterType === 'potuzhnist') {
+        if (currentMeterType === 'potuzhnist')  {
+            if (finalValue >= 65 && finalValue <= 74) {
+                safePlay(meter1_4);
             if (finalValue >= 75 && finalValue <= 85) {
                 safePlay(meter1_3);
             } else if (finalValue >= 86 && finalValue <= 94) {
