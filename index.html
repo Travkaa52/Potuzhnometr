@@ -544,9 +544,9 @@
 <!-- Special modal shown for 98-100 -->
 <div id="special-modal" class="hidden" aria-hidden="true">
   <div class="special-content">
-    <h2 id="special-title" style="font-size:1.5rem; margin-bottom:0.5rem;">🌟 Усе бомбезно!</h2>
-    <p id="special-text" style="margin-bottom:1rem;">Здесь ты можешь вставить свой текст — он появится при результате 98–100.</p>
-    <button id="special-close" style="padding:0.6rem 1.2rem;border-radius:9999px;background:#2563eb;color:#fff;font-weight:700;">Закрыть</button>
+    <h2 id="special-title" style="font-size:1.5rem; margin-bottom:0.5rem;">Потужнометр вибухнув‼️</h2>
+    <p id="special-text" style="margin-bottom:1rem;">Ваш потужнометр вибухнув від рівня потужності,наша команда вже вислала вам новий .</p>
+    <button id="special-close" style="padding:0.6rem 1.2rem;border-radius:9999px;background:#2563eb;color:#fff;font-weight:700;">ОТРИМАТИ</button>
   </div>
 </div>
 
@@ -557,10 +557,13 @@
 <audio id="meter1_2" src="sounds/meter1_2.mp3" preload="auto"></audio>
 <audio id="meter1_3" src="sounds/meter1_3.mp3" preload="auto"></audio>
 <audio id="meter1_4" src="sounds/meter1_4.mp3" preload="auto"></audio>
+<audio id="meter1_5" src="sounds/meter1_5.mp3" preload="auto"></audio>
+
 
 <audio id="meter2_1" src="sounds/meter2_1.mp3" preload="auto"></audio>
 <audio id="meter2_2" src="sounds/meter2_2.mp3" preload="auto"></audio>
 <audio id="meter2_3" src="sounds/meter2_3.mp3" preload="auto"></audio>
+<audio id="meter2_4" src="sounds/meter2_4.mp3" preload="auto"></audio>
 
 <!-- Placeholder for user's special sound — put your file in sounds/ and update src if needed -->
 <audio id="special_sound" src="sounds/special.mp3" preload="auto"></audio>
@@ -599,9 +602,12 @@ const meter1_1 = document.getElementById('meter1_1');
 const meter1_2 = document.getElementById('meter1_2');
 const meter1_3 = document.getElementById('meter1_3');
 const meter1_4 = document.getElementById('meter1_4');
+const meter1_5 = document.getElementById('meter1_5');
 const meter2_1 = document.getElementById('meter2_1');
 const meter2_2 = document.getElementById('meter2_2');
 const meter2_3 = document.getElementById('meter2_3');
+const meter2_4 = document.getElementById('meter2_4');
+
 const radia = document.getElementById('radia');
 const specialSound = document.getElementById('special_sound');
 
@@ -779,10 +785,13 @@ measureBtn.addEventListener('click', () => {
                 safePlay(meter1_1);
             }
         } else if (currentMeterType === 'zrada') {
-            if (finalValue >= 75 && finalValue <= 85) {
+            if (finalValue >= 65 && finalValue <= 75) {
                 safePlay(meter2_1);
-            } else if (finalValue >= 86 && finalValue <= 94) {
+            } else if (currentMeterType === 'zrada') {
+            if (finalValue >= 75 && finalValue <= 85) {
                 safePlay(meter2_2);
+            } else if (finalValue >= 86 && finalValue <= 94) {
+                safePlay(meter2_4);
             } else if (finalValue >= 95) {
                 safePlay(meter2_3);
             }
@@ -794,7 +803,7 @@ measureBtn.addEventListener('click', () => {
             specialModal.classList.remove('hidden');
             // Пользователь должен поместить свой файл sounds/special.mp3
             // и/или заменить вызов ниже на свой элемент.
-            safePlay(specialSound);
+            safePlay(special);
         }
     }, 4000);
 });
