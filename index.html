@@ -798,13 +798,10 @@ measureBtn.addEventListener('click', () => {
         }
 
         // === 🔔 Новый блок для 98–100 ===
-        if (finalValue >= 98 && finalValue <= 100) {
-            // Показать модальное окно
-            specialModal.classList.remove('hidden');
-            // Пользователь должен поместить свой файл sounds/special.mp3
-            // и/или заменить вызов ниже на свой элемент.
-            safePlay(special);
-        }
+if (finalValue >= 98 && finalValue <= 100) {
+    specialModal.classList.remove('hidden');
+    safePlay(specialSound); // ✅ исправлено
+}
     }, 4000);
 });
 // ==== конец исправления ====
