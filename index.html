@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Потужнометр - Веб-игра (Исправленный)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(-45deg, #1d1d1d, #0d0d0d, #1a1a1a, #0d0d0d);
+            background-size: 400% 400%;
+            animation: gradient-bg 15s ease infinite;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        @keyframes gradient-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            background-color: rgba(30, 30, 30, 0.8);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: #ffffff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            transform: perspective(1000px) rotateX(1deg);
+            transition: transform 0.5s ease;
+        }
+
+        .container:hover {
+            transform: perspective(1000px) rotateX(0deg);
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: absolute;
+            top: 1rem;
+            left: 0;
+            padding: 0 1rem;
+        }
+
+        .top-icon-btn {
+            background-color: rgba(60, 60, 60, 0.7);
+            border-radius: 50%;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .top-icon-btn:hover {
+            background-color: rgba(80, 80, 80, 0.9);
+            transform: scale(1.1);
+        }
+        .top-icon-btn svg {
+            width: 20px;
+            height: 20px;
+            filter: drop-shadow(0 0 5px #00ffff);
+        }
+
+        .title-section {
+            margin-top: 2.5rem;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .ua-flag {
+            width: 30px;
+            height: 20px;
+            border-radius: 3px;
+            object-fit: cover;
+            border: 1px solid #ffffff;
+        }
+
+        .description {
+            font-size: 0.75rem;
+            color: #a0a0a0;
+            margin-top: 0.25rem;
+        }
+
+        .section {
+            background-color: rgba(45, 45, 45, 0.8);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: left;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #22c55e;
+            box-shadow: 0 0 5px #22c55e;
+        }
+
+        .section-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            width: 20px;
+            height: 20px;
+        }
+
+        #scale {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 40px;
+            width: 100%;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background-color: #2d2d2d;
+        }
+
+        .scale-bar {
+            background-color: #1e1e1e;
+            width: 1.5%;
+            height: 10%;
+            transition: height 0.2s, background-color 0.2s;
+            transform-origin: bottom;
+        }
+        .scale-bar.active {
+            height: 100%;
+        }
+        .scale-bar.green { background-color: #57c742; }
+        .scale-bar.yellow { background-color: #f7d84b; }
+        .scale-bar.red { background-color: #fe514c; }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #a0a0a0;
+            width: 100%;
+        }
+
+        #result-display {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        #result-value-box {
+            background-color: #2d2d2d;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            flex-grow: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 120px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        #result {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #ef4444;
+            line-height: 1;
+            text-shadow: 0 0 10px #ef4444;
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            color: #a0a0a0;
+            margin-top: 0.5rem;
+        }
+
+        #mode-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-end;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        #mode-text {
+            font-size: 0.8rem;
+            color: #fff;
+            background: #2d2d2d;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .slider-container {
+            width: 100%;
+            margin-top: 1rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: rgba(45, 45, 45, 0.8);
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .slider-container.show {
+            display: flex;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #3b82f6;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity .2s;
+            border-radius: 4px;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: 2px solid #3b82f6;
+        }
+
+        #buttons-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 1.5rem;
+            gap: 1rem;
+        }
+
+        #measureBtn, .menu-btn {
+            flex-grow: 1;
+            padding: 0.8rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            font-size: 0.9rem;
+            white-space: nowrap;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        #measureBtn {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            color: white;
+        }
+        #measureBtn:hover {
+            background: linear-gradient(45deg, #16a34a, #22c55e);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 0 15px #22c55e;
+        }
+
+        .menu-btn {
+            background: linear-gradient(45deg, #6b7280, #4b5563);
+            color: white;
+            font-size: 1.125rem;
+            padding: 1.5rem 2rem;
+        }
+        .menu-btn:hover {
+            background: linear-gradient(45deg, #4b5563, #6b7280);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Modal styles */
+        #mode-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        .modal-content {
+            background-color: rgba(30, 30, 30, 0.95);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            width: 90%;
+            max-width: 400px;
+            color: white;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            color: #d1d5db;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .modal-close-btn:hover {
+            color: #ffffff;
+        }
+
+        .modal-item {
+            padding: 1rem;
+            background-color: rgba(45, 45, 45, 0.8);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-item h3 {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .mode-icon {
+            font-size: 1.25rem;
+        }
+
+        /* special modal */
+        #special-modal {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 60;
+        }
+        #special-modal .special-content {
+            background: linear-gradient(180deg, rgba(30,30,30,0.95), rgba(20,20,20,0.95));
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 480px;
+            border-radius: 1rem;
+            color: #fff;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+        }
+    
+/* === Antenna styles === */
+.antenna {
+    position: absolute;
+    top: -70px;
+    left: -40px;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 100;
+}
+.antenna-stick {
+    width: 6px;
+    height: 60px;
+    background: linear-gradient(to bottom, #555, #222);
+    border-radius: 3px;
+    box-shadow: inset 0 0 5px #000;
+}
+.antenna-light {
+    width: 22px;
+    height: 22px;
+    background: red;
+    border-radius: 50%;
+    margin-bottom: 6px;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+    animation: blink 1s infinite;
+}
+@keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0.2; }
+}
+
+</style>
+</head>
+<body>
+
+<div id="app">
+    <div class="container">
+        <div class="header-section">
+            <button class="top-icon-btn hidden" id="back-arrow-btn" title="Назад">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+            </button>
+            <button class="top-icon-btn ml-auto" id="info-btn" title="Режими"><img src="settings-icon.png" alt="Налаштування" class="w-5 h-5"></button>
+        </div>
+        <div id="menu">
+            <h1 class="mb-4">
+                <img src="ua-flag.png" alt="Прапор України" class="ua-flag">
+                Виберіть вимірювач
+            </h1>
+            <p class="description">
+                Виміряйте потужність або зраду за допомогою нашого інструмента.
+            </p>
+            <button class="menu-btn" data-meter="potuzhnist" id="potuzhnistBtn">Потужномір</button>
+            <button class="menu-btn" data-meter="zrada" id="zradaBtn">Зрадометр</button>
+        </div>
+
+        <div id="meter-screen" class="hidden">
+            <div class="title-section">
+                <h1 id="meterTitle"></h1>
+                <p class="description">UA-V2.3.0 PTJNMTR100</p>
+            </div>
+
+            <div class="antenna">
+  <div class="antenna-light"></div>
+  <div class="antenna-stick"></div>
+</div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="status-dot"></span>
+                    <span id="scale-label">ШКАЛА ПОТУЖНОСТІ</span>
+                    <span class="section-icon" id="meter-icon"></span>
+                </div>
+                <div id="scale"></div>
+                <div class="scale-labels">
+                    <span>MIN</span>
+                    <span>MAX</span>
+                </div>
+            </div>
+
+            <div id="result-display" class="section">
+                <div id="result-value-box">
+                    <span id="result-label" class="result-label">ПОКАЗНИК ПОТУЖНОСТІ</span>
+                    <div id="result">0%</div>
+                    <span class="result-label">МОДУЛЬ "ТЕРМОДАТА"</span>
+                </div>
+                <div id="mode-section">
+                    <span class="text-xs text-gray-400">РЕЖИМ</span>
+                    <span id="mode-text">РАНДОМ</span>
+                </div>
+            </div>
+
+            <div class="slider-container" id="manual-mode-slider">
+                <input type="range" min="0" max="100" value="0" class="slider" id="power-range">
+            </div>
+
+            <div id="buttons-container">
+                <button id="measureBtn">Виміряти</button>
+                <button id="backBtn" class="hidden">Назад</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal container for measurement modes -->
+<div id="mode-modal" class="hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>РЕЖИМ ВИМІРЮВАННЯ</h2>
+            <button class="modal-close-btn" id="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-item">
+            <h3 class="flex items-center"><span class="mode-icon text-white">👆</span> ДОТИК</h3>
+            <p class="text-sm text-gray-400">Управління короткими кліками в будь-якій точці екрану. Перший клік починає зростання, другий - зупиняє, третій - починає спадання.</p>
+        </div>
+        <div class="modal-item">
+            <h3 class="flex items-center"><span class="mode-icon text-yellow-500">👌</span> УТРИМАННЯ</h3>
+            <p class="text-sm text-gray-400">Утримуйте будь-яку точку екрану, щоб збільшувати потужність. Відпустіть, щоб вона знижувалася.</p>
+        </div>
+        <div class="modal-item">
+            <h3 class="flex items-center"><span class="mode-icon text-green-500">🎲</span> РАНДОМ</h3>
+            <p class="text-sm text-gray-400">Випадкове вимірювання потужності протягом заданого часу.</p>
+        </div>
+        <div class="modal-item">
+            <h3 class="flex items-center"><span class="mode-icon text-blue-500">🖐️</span> РУЧНИЙ</h3>
+            <p class="text-sm text-gray-400">Ручний контроль рівня потужності за допомогою повзунка.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Special modal shown for 98-100 -->
+<div id="special-modal" class="hidden" aria-hidden="true">
+  <div class="special-content">
+    <h2 id="special-title" style="font-size:1.5rem; margin-bottom:0.5rem;">🌟 Усе бомбезно!</h2>
+    <p id="special-text" style="margin-bottom:1rem;">Здесь ты можешь вставить свой текст — он появится при результате 98–100.</p>
+    <button id="special-close" style="padding:0.6rem 1.2rem;border-radius:9999px;background:#2563eb;color:#fff;font-weight:700;">Закрыть</button>
+  </div>
+</div>
+
+<!-- Optional audio elements (place your audio files under /sounds/ or update src paths) -->
+<audio id="radia" src="sounds/radia.mp3" preload="auto"></audio>
+
+<audio id="meter1_1" src="sounds/meter1_1.mp3" preload="auto"></audio>
+<audio id="meter1_2" src="sounds/meter1_2.mp3" preload="auto"></audio>
+<audio id="meter1_3" src="sounds/meter1_3.mp3" preload="auto"></audio>
+<audio id="meter1_4" src="sounds/meter1_4.mp3" preload="auto"></audio>
+
+<audio id="meter2_1" src="sounds/meter2_1.mp3" preload="auto"></audio>
+<audio id="meter2_2" src="sounds/meter2_2.mp3" preload="auto"></audio>
+<audio id="meter2_3" src="sounds/meter2_3.mp3" preload="auto"></audio>
+
+<!-- Placeholder for user's special sound — put your file in sounds/ and update src if needed -->
+<audio id="special_sound" src="sounds/special.mp3" preload="auto"></audio>
+
+<script>
+// === Исправленный скрипт с модальным окном для 98-100 ===
+
+// Получение ссылок на элементы
+const menuDiv = document.getElementById('menu');
+const meterScreenDiv = document.getElementById('meter-screen');
+const meterTitle = document.getElementById('meterTitle');
+const potuzhnistBtn = document.getElementById('potuzhnistBtn');
+const zradaBtn = document.getElementById('zradaBtn');
+const measureBtn = document.getElementById('measureBtn');
+const backArrowBtn = document.getElementById('back-arrow-btn');
+const infoBtn = document.getElementById('info-btn');
+const resultDiv = document.getElementById('result');
+const scale = document.getElementById('scale');
+const meterIcon = document.getElementById('meter-icon');
+const scaleLabel = document.getElementById('scale-label');
+const resultLabel = document.getElementById('result-label');
+const modeText = document.getElementById('mode-text');
+const manualModeSlider = document.getElementById('manual-mode-slider');
+const powerRange = document.getElementById('power-range');
+const modeModal = document.getElementById('mode-modal');
+const closeModalBtn = document.getElementById('close-modal-btn');
+const specialModal = document.getElementById('special-modal');
+const specialCloseBtn = document.getElementById('special-close');
+const specialTextEl = document.getElementById('special-text');
+const specialTitleEl = document.getElementById('special-title');
+
+const uaFlagSvg = `<img src="ua-flag.png" alt="Прапор України" class="ua-flag">`;
+
+// Звуки (получаем элементы, но будем проверять перед вызовом play)
+const meter1_1 = document.getElementById('meter1_1');
+const meter1_2 = document.getElementById('meter1_2');
+const meter1_3 = document.getElementById('meter1_3');
+const meter1_4 = document.getElementById('meter1_4');
+const meter2_1 = document.getElementById('meter2_1');
+const meter2_2 = document.getElementById('meter2_2');
+const meter2_3 = document.getElementById('meter2_3');
+const radia = document.getElementById('radia');
+const specialSound = document.getElementById('special_sound');
+
+// SVG-иконки (можно заменить на реальные SVG или img)
+const skullIconSvg = `<img src="skull-icon.png" alt="Череп" class="w-6 h-6">`;
+const zradaIconSvg = `<img src="skull-icon.png" alt="Зрада" class="w-6 h-6">`;
+
+let currentMeterType = '';
+
+// Показ экрана
+function showScreen(screenId) {
+    menuDiv.classList.add('hidden');
+    meterScreenDiv.classList.add('hidden');
+    modeModal.classList.add('hidden');
+    specialModal.classList.add('hidden');
+    document.getElementById(screenId).classList.remove('hidden');
+    
+
+
+}
+
+// Генерация шкалы
+function generateScale() {
+    scale.innerHTML = '';
+    const numberOfBars = 50;
+    for (let i = 0; i < numberOfBars; i++) {
+        const bar = document.createElement('div');
+        bar.classList.add('scale-bar');
+        scale.appendChild(bar);
+    }
+}
+
+// Обновление шкалы UI
+function updateScaleUI(value) {
+    const bars = document.querySelectorAll('.scale-bar');
+    const activeBars = Math.floor(value / 2);
+
+    bars.forEach((bar, index) => {
+        bar.classList.remove('active', 'green', 'yellow', 'red');
+        if (index < activeBars) {
+            bar.classList.add('active');
+            if (currentMeterType === 'potuzhnist') {
+                if (value < 50) bar.classList.add('green');
+                else if (value < 80) bar.classList.add('yellow');
+                else bar.classList.add('red');
+            } else {
+                if (value < 50) bar.classList.add('red');
+                else if (value < 80) bar.classList.add('yellow');
+                else bar.classList.add('green');
+            }
+        }
+    });
+}
+
+// Обновление результата
+function updateResultDisplay(value) {
+    resultDiv.textContent = `${value}%`;
+    if (currentMeterType === 'potuzhnist') {
+        if (value >= 80) { resultDiv.style.color = '#ef4444'; resultDiv.style.textShadow = '0 0 10px #ef4444'; }
+        else if (value >= 50) { resultDiv.style.color = '#f59e0b'; resultDiv.style.textShadow = '0 0 10px #f59e0b'; }
+        else { resultDiv.style.color = '#22c55e'; resultDiv.style.textShadow = '0 0 10px #22c55e'; }
+    } else {
+        if (value >= 80) { resultDiv.style.color = '#22c55e'; resultDiv.style.textShadow = '0 0 10px #22c55e'; }
+        else if (value >= 50) { resultDiv.style.color = '#f59e0b'; resultDiv.style.textShadow = '0 0 10px #f59e0b'; }
+        else { resultDiv.style.color = '#ef4444'; resultDiv.style.textShadow = '0 0 10px #ef4444'; }
+    }
+}
+
+// Обновление всего
+function updateMeter(value) {
+    updateScaleUI(Number(value));
+    updateResultDisplay(Number(value));
+}
+
+// Защищённый вызов play()
+function safePlay(audioEl) {
+    if (!audioEl) return;
+    try {
+        audioEl.currentTime = 0;
+        const p = audioEl.play();
+        if (p && p.catch) p.catch(()=>{/* autoplay blocked */});
+    } catch (e) {}
+}
+
+// Обработчики кнопок
+potuzhnistBtn.addEventListener('click', () => {
+    currentMeterType = 'potuzhnist';
+    showScreen('meter-screen');
+    backArrowBtn.classList.remove('hidden');
+    meterTitle.innerHTML = `${uaFlagSvg} ПОТУЖНОМЕТР`;
+    scaleLabel.textContent = 'ШКАЛА ПОТУЖНОСТІ';
+    resultLabel.textContent = 'ПОКАЗНИК ПОТУЖНОСТІ';
+    meterIcon.innerHTML = skullIconSvg;
+    generateScale();
+    updateMeter(0);
+});
+
+zradaBtn.addEventListener('click', () => {
+    currentMeterType = 'zrada';
+    showScreen('meter-screen');
+    backArrowBtn.classList.remove('hidden');
+    meterTitle.innerHTML = `${uaFlagSvg} ЗРАДОМЕТР`;
+    scaleLabel.textContent = 'ШКАЛА ЗРАДИ';
+    resultLabel.textContent = 'ПОКАЗНИК ЗРАДИ';
+    meterIcon.innerHTML = zradaIconSvg;
+    generateScale();
+    updateMeter(0);
+});
+
+backArrowBtn.addEventListener('click', () => {
+    showScreen('menu');
+    backArrowBtn.classList.add('hidden');
+    manualModeSlider.classList.add('hidden');
+    modeText.textContent = 'РАНДОМ';
+});
+
+// Обработчик закрытия модалок
+closeModalBtn.addEventListener('click', () => {
+    showScreen('meter-screen');
+});
+specialCloseBtn.addEventListener('click', () => {
+    specialModal.classList.add('hidden');
+});
+
+powerRange.addEventListener('input', (e) => {
+    updateMeter(e.target.value);
+    modeText.textContent = 'РУЧНИЙ';
+});
+
+// ==== Исправленный обработчик кнопки "Виміряти" ====
+measureBtn.addEventListener('click', () => {
+    let currentValue = 0;
+
+    try {
+        if (radia) {
+            radia.currentTime = 0;
+            radia.loop = true;
+            const playPromise = radia.play();
+            if (playPromise && playPromise.catch) playPromise.catch(()=>{/* autoplay blocked */});
+        }
+    } catch (e) {
+        // ignore audio play errors
+    }
+
+    // стрелка хаотично скачет 4 секунды
+    const randomInterval = setInterval(() => {
+        currentValue = Math.floor(Math.random() * 101);
+        updateMeter(currentValue);
+    }, 100);
+
+    // через 4 секунды остановка
+    setTimeout(() => {
+        clearInterval(randomInterval);
+
+        try {
+            if (radia) {
+                radia.pause();
+                radia.currentTime = 0;
+            }
+        } catch (e) {}
+
+        // фиксируем финальный результат
+        const finalValue = Math.floor(Math.random() * 101);
+        updateMeter(finalValue);
+
+        // выбор финального звука
+        if (currentMeterType === 'potuzhnist')  {
+            if (finalValue >= 65 && finalValue <= 74) {
+                safePlay(meter1_4);
+            } else if (finalValue >= 75 && finalValue <= 85) {
+                safePlay(meter1_3);
+            } else if (finalValue >= 86 && finalValue <= 94) {
+                safePlay(meter1_2);
+            } else if (finalValue >= 95) {
+                safePlay(meter1_1);
+            }
+        } else if (currentMeterType === 'zrada') {
+            if (finalValue >= 75 && finalValue <= 85) {
+                safePlay(meter2_1);
+            } else if (finalValue >= 86 && finalValue <= 94) {
+                safePlay(meter2_2);
+            } else if (finalValue >= 95) {
+                safePlay(meter2_3);
+            }
+        }
+
+        // === 🔔 Новый блок для 98–100 ===
+        if (finalValue >= 98 && finalValue <= 100) {
+            // Показать модальное окно
+            specialModal.classList.remove('hidden');
+            // Пользователь должен поместить свой файл sounds/special.mp3
+            // и/или заменить вызов ниже на свой элемент.
+            safePlay(specialSound);
+        }
+    }, 4000);
+});
+// ==== конец исправления ====
+
+window.onload = () => {
+    generateScale();
+    showScreen('menu');
+};
+</script>
+
+</body>
+</html>
