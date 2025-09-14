@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ-панель</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            margin: 0;
+            padding: 2rem;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        a {
+            display: inline-block;
+            margin-bottom: 1rem;
+            text-decoration: none;
+            background: #ef4444;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+        a:hover {
+            background: #dc2626;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: center;
+        }
+        th {
+            background: #334155;
+        }
+        tr:nth-child(even) {
+            background: #0f172a;
+        }
+        tr:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body>
+    <h2>Админ-панель</h2>
+    <a href="/logout">Выйти</a>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Тип</th>
+            <th>Значение</th>
+        </tr>
+        {% for s in stats %}
+        <tr>
+            <td>{{ s[0] }}</td>
+            <td>{{ s[1] }}</td>
+            <td>{{ s[2] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
