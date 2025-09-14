@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Потужнометр - Веб-гра</title>
+    <title>Потужнометр - Веб-игра</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -413,8 +413,8 @@
             <p class="description">
                 Виміряйте потужність або зраду за допомогою нашого інструмента.
             </p>
-            <button class="menu-btn" data-meter="potuzhnist">Потужномір</button>
-            <button class="menu-btn" data-meter="zrada">Зрадометр</button>
+            <button class="menu-btn" data-meter="potuzhnist" id="potuzhnistBtn">Потужномір</button>
+            <button class="menu-btn" data-meter="zrada" id="zradaBtn">Зрадометр</button>
         </div>
 
         <div id="meter-screen" class="hidden">
@@ -487,11 +487,15 @@
 </div>
 
 <script>
+    // Получение ссылок на элементы
     const menuDiv = document.getElementById('menu');
     const meterScreenDiv = document.getElementById('meter-screen');
     const meterTitle = document.getElementById('meterTitle');
+    const potuzhnistBtn = document.getElementById('potuzhnistBtn');
+    const zradaBtn = document.getElementById('zradaBtn');
     const measureBtn = document.getElementById('measureBtn');
-    const backBtn = document.getElementById('backBtn');
+    const backArrowBtn = document.getElementById('back-arrow-btn');
+    const infoBtn = document.getElementById('info-btn');
     const resultDiv = document.getElementById('result');
     const scale = document.getElementById('scale');
     const meterIcon = document.getElementById('meter-icon');
@@ -500,22 +504,21 @@
     const modeText = document.getElementById('mode-text');
     const manualModeSlider = document.getElementById('manual-mode-slider');
     const powerRange = document.getElementById('power-range');
-    const backArrowBtn = document.getElementById('back-arrow-btn');
-    const infoBtn = document.getElementById('info-btn');
     const modeModal = document.getElementById('mode-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
     const uaFlagSvg = `<img src="https://placehold.co/30x20/0057B8/FFD700?text=UA" alt="Прапор України" class="ua-flag">`;
 
-    // SVG icons for meter and settings
+    // SVG-иконки для счетчика
     const skullIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="filter: drop-shadow(0 0 5px #ff4500);">
         <path fill-rule="evenodd" d="M11.488 2.059a.75.75 0 0 1 .494 0c.273.04.532.149.774.309l4.5 3c.636.424 1.22.956 1.745 1.564a.75.75 0 0 1-.099 1.115l-1.637 1.033c-.42.266-1.0.352-1.46.234l-2.029-.512a.75.75 0 0 0-.822.428l-.512 2.029a1.5 1.5 0 0 1-.234.618l-1.033 1.637a.75.75 0 0 1-1.115 0l-1.05-1.4a.75.75 0 0 0-.622-1.082l-2.001-.39a.75.75 0 0 1-.502-.857l.163-1.637a.75.75 0 0 0-.616-.763l-1.674-.336a.75.75 0 0 1-.573-.834l.261-1.043a.75.75 0 0 1 .801-.634l1.62-.324a.75.75 0 0 0 .584-.567l.385-1.921a.75.75 0 0 1 .632-.616l1.637.163c.42.042.82.175 1.19.395ZM12 8.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z" clip-rule="evenodd" />
     </svg>`;
     const zradaIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="filter: drop-shadow(0 0 5px #00ffff);">
         <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.875 9a.75.75 0 0 0 0 1.5h.75v1.875a.75.75 0 0 0 1.5 0v-2.25a.75.75 0 0 0-.75-.75h-1.5ZM12 17.25a.75.75 0 0 0 .75-.75V12a.75.75 0 0 0-1.5 0v4.5c0 .414.336.75.75.75Z" clip-rule="evenodd" />
     </svg>`;
-
+    
     let currentMeterType = '';
 
+    // Функция для показа экрана
     function showScreen(screenId) {
         document.getElementById('menu').classList.add('hidden');
         document.getElementById('meter-screen').classList.add('hidden');
@@ -523,6 +526,7 @@
         document.getElementById(screenId).classList.remove('hidden');
     }
 
+    // Функция для обновления шкалы
     function updateScaleUI(value) {
         const bars = document.querySelectorAll('.scale-bar');
         const activeBars = Math.floor(value / 2);
@@ -552,11 +556,6 @@
         });
     }
 
+    // Функция для обновления результата
     function updateResultDisplay(value) {
-        resultDiv.textContent = `${value}%`;
-
-        if (currentMeterType === 'potuzhnist') {
-            if (value >= 80) {
-                resultDiv.style.color = '#ef4444';
-                resultDiv.style.textShadow = '0 0 10px #ef4444';
-            } else if (
+        resultDiv.te
