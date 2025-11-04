@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚨 Управління через бота - Харків</title>
+    <title>🚨 KharkivAlerts: Карта Загроз</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
@@ -15,33 +15,17 @@
         }
         .container { max-width: 1600px; margin: 0 auto; padding: 15px; }
         
-        /* БОТ СТАТУС */
-        .bot-status {
-            background: rgba(0, 136, 204, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #0088cc;
-            text-align: center;
-        }
-        .bot-btn {
-            background: #0088cc;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 5px;
-        }
-        
         /* ОСНОВНОЙ ИНТЕРФЕЙС */
         header { 
             text-align: center; background: rgba(255, 255, 255, 0.08); 
             padding: 20px; border-radius: 15px; margin-bottom: 15px; 
             backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1);
         }
-        h1 { color: #ff6b6b; margin-bottom: 10px; font-size: 2.2em; }
+        h1 { color: #ff6b6b; margin-bottom: 5px; font-size: 2.2em; }
+        .subheader { color: #ccc; margin-bottom: 10px; font-size: 1.1em; }
+        
+        /* СТАТУС ОНЛАЙН/ОФЛАЙН */
+        .status-online { color: #00FF00; font-weight: bold; }
         
         .stats-container { 
             display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
@@ -69,87 +53,97 @@
         .alerts-list { max-height: 400px; overflow-y: auto; }
         .alert-item { 
             background: rgba(255, 255, 255, 0.1); border-left: 5px solid #ff6b6b; padding: 15px; 
-            margin: 8px 0; border-radius: 8px;
+            margin: 8px 0; border-radius: 8px; transition: background 0.3s;
         }
-        .alert-item.rocket { border-left-color: #ff6b6b; }
-        .alert-item.drone { border-left-color: #f39c12; }
-        .alert-item.aircraft { border-left-color: #9b59b6; }
-        .alert-item.recon { border-left-color: #3498db; }
-        .alert-item.bot { border-left-color: #0088cc; }
+        .alert-item:hover { background: rgba(255, 255, 255, 0.15); }
+
+        /* СТИЛІ ДЛЯ СМУГ СТАТУСУ (як у deshahed.info) */
+        .alert-item.s300 { border-left-color: #e74c3c; } 
+        .alert-item.iskander { border-left-color: #f39c12; } 
+        .alert-item.kab { border-left-color: #9b59b6; } 
+        .alert-item.shahed { border-left-color: #3498db; } 
+        .alert-item.fpv { border-left-color: #1abc9c; } 
+        .alert-item.artillery { border-left-color: #e67e22; } 
+        .alert-item.alert { border-left-color: #f1c40f; } 
+
         .alert-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
         .alert-type { font-weight: bold; font-size: 1.1em; color: #ff6b6b; }
-        .alert-source { 
-            background: #666; color: white; padding: 2px 6px; border-radius: 10px; 
-            font-size: 0.7em; margin-left: 5px;
-        }
-        .alert-source.bot { background: #0088cc; }
-        .alert-source.admin { background: #00aa00; }
-        .alert-location { background: #ff6b6b; color: white; padding: 4px 8px; border-radius: 15px; font-size: 0.75em; }
         .alert-time { color: #ccc; font-size: 0.8em; }
         .alert-message { margin-top: 8px; color: #eee; font-size: 0.9em; }
         .loading { text-align: center; padding: 30px; color: #ccc; }
         
         /* СТИЛИ ДЛЯ КАРТИНОК МАРКЕРОВ */
         .custom-marker {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
-            border: 3px solid white;
+            border: 4px solid white;
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            background-size: cover;
+            background-size: 70%; 
             background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
         }
-        .marker-rocket { border-color: #ff6b6b; }
-        .marker-drone { border-color: #f39c12; }
-        .marker-aircraft { border-color: #9b59b6; }
-        .marker-recon { border-color: #3498db; }
-        .marker-bot { border-color: #0088cc; }
+        /* НОВІ СТИЛІ ДЛЯ МАРКЕРІВ (кольори фону) */
+        .marker-s300 { border-color: #e74c3c; background-color: rgba(231, 76, 60, 0.8); }
+        .marker-iskander { border-color: #f39c12; background-color: rgba(243, 156, 18, 0.8); }
+        .marker-kab { border-color: #9b59b6; background-color: rgba(155, 89, 182, 0.8); }
+        .marker-shahed { border-color: #3498db; background-color: rgba(52, 152, 219, 0.8); }
+        .marker-fpv { border-color: #1abc9c; background-color: rgba(26, 188, 156, 0.8); }
+        .marker-artillery { border-color: #e67e22; background-color: rgba(230, 126, 34, 0.8); }
+        .marker-alert { border-color: #f1c40f; background-color: rgba(241, 196, 15, 0.8); }
+        
+        /* Стиль для линии маршрута */
+        .leaflet-pane.leaflet-overlay-pane path.shahed-line {
+            stroke-width: 4px;
+            stroke-dasharray: 8, 8;
+            stroke-opacity: 0.8;
+            stroke: #3498db; 
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- СТАТУС БОТА -->
-        <div class="bot-status">
-            <h3>🤖 Управління через Telegram бота</h3>
-            <div style="margin: 10px 0;">
-                <strong>Бот активний:</strong> 
-                <a href="https://t.me/KharkivAlertsBot" target="_blank" style="color: #00FF00;">@KharkivAlertsBot</a>
-            </div>
-            <button class="bot-btn" onclick="openBot()">💬 Відкрити бота</button>
-            <button class="bot-btn" onclick="testBotConnection()">🔗 Перевірити з'єднання</button>
-            <button class="bot-btn" onclick="getBotUpdates()">🔄 Оновити дані</button>
-            
-            <div style="margin-top: 10px; font-size: 0.9em; color: #ccc;">
-                Використовуйте бота для додавання тривог та управління системою
-            </div>
-        </div>
-
-        <!-- ОСНОВНОЙ ИНТЕРФЕЙС -->
         <header>
-            <h1>🚨 Система моніторингу через бота</h1>
+            <h1>🚨 KharkivAlerts: Карта Загроз</h1>
+            <div class="subheader">Моніторинг загроз у Харківській області. Дані оновлюються вручну з файлу alerts.json</div>
             <div class="last-update">
-                Статус: <span id="connectionStatus" class="status-online">Очікування команд з бота</span> | 
-                Оновлення: <span id="lastUpdate">--:--:--</span> |
-                Тривог: <span id="alertsCount">0</span>
+                Статус: <span id="connectionStatus" class="status-online">Онлайн</span> | 
+                Останнє оновлення даних: <span id="lastUpdate">--:--:--</span> |
+                Активних загроз: <span id="alertsCount">0</span>
+            </div>
+            <div style="margin-top: 10px; font-size: 0.8em; color: #ff6b6b;">
+                ❗️ Інформація не є офіційною. Слідкуйте за офіційними джерелами.
             </div>
         </header>
 
         <div class="stats-container">
             <div class="stat-card">
-                <div class="stat-number" id="totalAlerts">0</div>
-                <div class="stat-label">Всього тривог</div>
-            </div>
-            <div class="stat-card">
                 <div class="stat-number" id="activeAlerts">0</div>
-                <div class="stat-label">Активних загроз</div>
+                <div class="stat-label">🔴 Активних загроз</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="rocketAlerts">0</div>
-                <div class="stat-label">Ракетних атак</div>
+                <div class="stat-number" id="s300Alerts">0</div>
+                <div class="stat-label">С-300 / С-400</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="droneAlerts">0</div>
-                <div class="stat-label">Дронів-камікадзе</div>
+                <div class="stat-number" id="kabAlerts">0</div>
+                <div class="stat-label">💣 КАБ / УМПБ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="shahedAlerts">0</div>
+                <div class="stat-label">🛸 Дрони Shahed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="iskanderAlerts">0</div>
+                <div class="stat-label">💥 Іскандер-М</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="artilleryAlerts">0</div>
+                <div class="stat-label">🔥 Артилерія / РСЗВ</div>
             </div>
         </div>
 
@@ -158,323 +152,198 @@
         </div>
 
         <div class="alerts-container">
-            <h2>📢 Останні сповіщення з бота</h2>
+            <h2>📢 Останні активні сповіщення</h2>
             <div id="alertsList" class="alerts-list">
-                <div class="loading">Очікування команд з Telegram бота...</div>
+                <div class="loading">Завантаження даних...</div>
             </div>
         </div>
     </div>
 
     <script>
         // КОНФИГУРАЦИЯ
-        const BOT_TOKEN = "8072675312:AAEsCXVL4RcSKNQasBTMGCcecZQoGsTCfkY";
-        const BOT_ADMIN_IDS = ["123456789", "987654321"]; // ID администраторов бота
+        const DATA_FILE_URL = './alerts.json?v=' + Date.now(); // Добавляем timestamp для обхода кэша
+        const UPDATE_INTERVAL = 10000; // Обновление каждые 10 секунд
         
-        // БАЗА ЛОКАЦИЙ
-        const locationsDB = {
-            'Слобідський район': [50.005, 36.229],
-            'Шевченківський район': [49.993, 36.230],
-            'Київський район': [49.985, 36.280],
-            'Московський район': [49.970, 36.270],
-            'Немишлянський район': [49.980, 36.340],
-            'Індустріальний район': [49.920, 36.290],
-            'Дергачі': [50.110, 36.120],
-            'Чугуїв': [49.835, 36.686],
-            'Зміїв': [49.674, 36.347],
-            'Харків': [49.9935, 36.2304]
-        };
-
-        // КАРТИНКИ ДЛЯ МАРКЕРОВ
-        const markerImages = {
-            rocket: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMjAiIGZpbGw9IiNGRjZCNkIiLz4KPHBhdGggZD0iTTIwIDEwTDI2IDE2TDIwIDIyTDE0IDE2TDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+',
-            drone: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMjAiIGZpbGw9IiNGMzlDMTIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iOCIgZmlsbD0id2hpdGUiLz4KPC9zdmc+',
-            aircraft: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMjAiIGZpbGw9IiM5QjU5QjYiLz4KPHBhdGggZD0iTTIwIDEwTDMwIDE2TDIwIDIyTDEwIDE2TDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+',
-            recon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMjAiIGZpbGw9IiMzNDk4REIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTAiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPg==',
-            bot: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMjAiIGZpbGw9IiMwMDg4Q0MiLz4KPGNpcmNsZSBjeD0iMTUiIGN5PSIxNSIgcj0iMiIgZmlsbD0id2hpdGUiLz4KPGNpcmNsZSBjeD0iMjUiIGN5PSIxNSIgcj0iMiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTE1IDI1QzE1IDIyIDIwIDIwIDIwIDIwQzI1IDIwIDMwIDIyIDMwIDI1IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz4KPC9zdmc+'
-        };
-
         let map;
-        let alerts = [];
-        let botUpdatesInterval;
-        let lastBotUpdateId = 0;
+        let activeAlerts = [];
+        let mapLayers = L.layerGroup();
 
-        // ОТКРЫТИЕ БОТА
-        function openBot() {
-            window.open('https://t.me/KharkivAlertsBot', '_blank');
-        }
+        // ІКОНКИ ДЛЯ МАРКЕРІВ
+        const TYPE_ICONS = {
+            s300: '🔴',
+            iskander: '💥',
+            kab: '💣',
+            shahed: '🛸',
+            fpv: '🛰️',
+            artillery: '🔥',
+            alert: '⚠️'
+        };
 
-        // ПРОВЕРКА СОЕДИНЕНИЯ С БОТОМ
-        async function testBotConnection() {
-            try {
-                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getMe`);
-                const data = await response.json();
-                
-                if (data.ok) {
-                    alert(`✅ Бот активний: ${data.result.first_name}\nUsername: @${data.result.username}`);
-                    updateStatus('Бот підключено', true);
-                } else {
-                    alert('❌ Помилка підключення до бота');
-                    updateStatus('Помилка бота', false);
-                }
-            } catch (error) {
-                alert('❌ Помилка: ' + error.message);
-                updateStatus('Помилка мережі', false);
-            }
-        }
-
-        // ПОЛУЧЕНИЕ ОБНОВЛЕНИЙ ОТ БОТА
-        async function getBotUpdates() {
-            try {
-                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${lastBotUpdateId + 1}&timeout=10`);
-                const data = await response.json();
-                
-                if (data.ok && data.result.length > 0) {
-                    let newAlertsCount = 0;
-                    
-                    data.result.forEach(update => {
-                        // Обрабатываем команды от администраторов
-                        if (update.message && BOT_ADMIN_IDS.includes(update.message.from.id.toString())) {
-                            processBotCommand(update.message);
-                        }
-                        
-                        lastBotUpdateId = update.update_id;
-                    });
-                    
-                    if (newAlertsCount > 0) {
-                        updateStatus(`Отримано ${newAlertsCount} нових команд`, true);
-                    } else {
-                        updateStatus('Очікування команд з бота', true);
-                    }
-                }
-            } catch (error) {
-                console.error('Помилка отримання оновлень:', error);
-            }
-        }
-
-        // ОБРАБОТКА КОМАНД БОТА
-        function processBotCommand(message) {
-            const text = message.text;
-            const chatId = message.chat.id;
-            
-            if (!text) return;
-            
-            // Обработка команд админа
-            if (text.startsWith('/add_alert')) {
-                processAddAlertCommand(text, chatId);
-            }
-            else if (text.startsWith('/clear_alerts')) {
-                processClearAlertsCommand(chatId);
-            }
-            else if (text.startsWith('/status')) {
-                processStatusCommand(chatId);
-            }
-            else if (text.startsWith('/help')) {
-                processHelpCommand(chatId);
-            }
-        }
-
-        // КОМАНДА: ДОБАВИТЬ ТРЕВОГУ
-        function processAddAlertCommand(commandText, chatId) {
-            // Формат: /add_alert тип локация сообщение
-            const parts = commandText.split(' ');
-            if (parts.length < 4) {
-                sendBotMessage(chatId, '❌ Невірний формат команди. Використовуйте: /add_alert тип локація повідомлення');
-                return;
-            }
-            
-            const type = parts[1];
-            const location = parts[2];
-            const message = parts.slice(3).join(' ');
-            
-            if (!['rocket', 'drone', 'aircraft', 'recon', 'alert'].includes(type)) {
-                sendBotMessage(chatId, '❌ Невірний тип тривоги. Дозволені: rocket, drone, aircraft, recon, alert');
-                return;
-            }
-            
-            const coords = locationsDB[location] || [49.9935, 36.2304];
-            createAlert(location, type, message, coords, 'bot');
-            
-            sendBotMessage(chatId, `✅ Тривогу додано!\n📍 ${location}\n🎯 ${getTypeName(type)}\n💬 ${message}`);
-        }
-
-        // КОМАНДА: ОЧИСТИТЬ ТРЕВОГИ
-        function processClearAlertsCommand(chatId) {
-            alerts = [];
-            
-            if (map) {
-                map.eachLayer(layer => {
-                    if (layer instanceof L.Marker) {
-                        map.removeLayer(layer);
-                    }
-                });
-            }
-            
-            updateAllDisplays();
-            sendBotMessage(chatId, '🗑️ Всі тривоги очищено!');
-        }
-
-        // КОМАНДА: СТАТУС
-        function processStatusCommand(chatId) {
-            const activeAlerts = alerts.filter(a => (Date.now() - a.timestamp) < 30 * 60 * 1000);
-            const stats = `📊 Статистика системи:
-• Всього тривог: ${alerts.length}
-• Активних: ${activeAlerts.length}
-• Ракетних: ${alerts.filter(a => a.type === 'rocket').length}
-• Дронів: ${alerts.filter(a => a.type === 'drone').length}
-• Літаків: ${alerts.filter(a => a.type === 'aircraft').length}
-• Розвідників: ${alerts.filter(a => a.type === 'recon').length}`;
-            
-            sendBotMessage(chatId, stats);
-        }
-
-        // КОМАНДА: ПОМОЩЬ
-        function processHelpCommand(chatId) {
-            const helpText = `🤖 Команди адміністратора:
-
-🚨 Додати тривогу:
-/add_alert тип локація повідомлення
-Приклад: /add_alert rocket Слобідський_район Ракетна_атака
-
-🗑️ Управління:
-/clear_alerts - очистити всі тривоги
-/status - статистика системи
-
-🎯 Типи тривог:
-• rocket - ракета/балістика
-• drone - дрон-камікадзе
-• aircraft - літак (Су-34/35)
-• recon - БПЛА розвідник
-• alert - повітряна тривога
-
-📍 Локації: Слобідський_район, Шевченківський_район, Дергачі, Харків, тощо`;
-
-            sendBotMessage(chatId, helpText);
-        }
-
-        // ОТПРАВКА СООБЩЕНИЯ В БОТ
-        async function sendBotMessage(chatId, text) {
-            try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        text: text,
-                        parse_mode: 'HTML'
-                    })
-                });
-            } catch (error) {
-                console.error('Помилка відправки повідомлення:', error);
-            }
-        }
-
-        // ОСНОВНЫЕ ФУНКЦИИ СИСТЕМЫ
-        function createAlert(location, type, message, coords, source = 'bot') {
-            const alert = {
-                id: Date.now() + Math.random(),
-                type: type,
-                location: location,
-                coords: coords,
-                message: message,
-                time: new Date().toLocaleTimeString('uk-UA'),
-                timestamp: Date.now(),
-                source: source
-            };
-            
-            alerts.unshift(alert);
-            addAlertMarker(alert);
-            updateAllDisplays();
-            
-            console.log('✅ Додано тривогу з бота:', alert);
-        }
-
-        function addAlertMarker(alert) {
-            const markerClass = 'marker-' + alert.type;
-            const markerImage = markerImages[alert.type] || markerImages.bot;
-
-            const icon = L.divIcon({
-                html: `<div class="custom-marker ${markerClass}" style="background-image: url('${markerImage}')"></div>`,
-                className: 'custom-marker-icon',
-                iconSize: [40, 40],
-                iconAnchor: [20, 20]
-            });
-
-            const marker = L.marker(alert.coords, { icon: icon }).addTo(map);
-            alert.marker = marker;
-            
-            marker.bindPopup(`
-                <div style="color: black; min-width: 300px;">
-                    <strong style="color: #ff6b6b; font-size: 1.1em;">
-                        ${getTypeName(alert.type)}
-                    </strong><br>
-                    <b>Локація:</b> ${alert.location}<br>
-                    <b>Час:</b> ${alert.time}<br>
-                    <b>Джерело:</b> <span style="color: #0088cc">🤖 Бот</span><br>
-                    <b>Повідомлення:</b> ${alert.message}
-                </div>
-            `);
-            
-            marker.openPopup();
-        }
-
+        // НАЗВИ ТИПІВ
         function getTypeName(type) {
             const names = {
-                rocket: '🚀 Ракета / Балістика',
-                drone: '🛸 Шахед / Дрон-камікадзе',
-                aircraft: '✈️ Літак (Су-34/35)',
-                recon: '📡 БПЛА розвідник / ФПВ',
-                alert: '⚠️ Повітряна тривога'
+                s300: '🔴 Ракета С-300/С-400 (Балістика)',
+                iskander: '💥 Ракета \'Іскандер-М\'',
+                kab: '💣 Керована авіабомба (КАБ/УМПБ)',
+                shahed: '🛸 Дрон \'Shahed\' (Герань-2)',
+                fpv: '🛰️ FPV-дрон / Розвідка',
+                artillery: '🔥 Артилерійський обстріл / РСЗВ',
+                alert: '⚠️ Загальна повітряна тривога',
             };
             return names[type] || type;
         }
 
+        // ВРЕМЯ
+        function formatTime(timestamp) {
+            if (!timestamp) return '--:--:--';
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        // ИНИЦИАЛИЗАЦИЯ КАРТЫ
+        function initMap() {
+            if (map) return;
+            
+            // Координаты Харькова
+            map = L.map('alertMap').setView([49.9935, 36.2304], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 18,
+            }).addTo(map);
+            
+            mapLayers.addTo(map);
+        }
+
+        // ЗАГРУЗКА ДАННЫХ ИЗ JSON
+        async function loadAlerts() {
+            try {
+                // Добавляем новый Date.now() чтобы гарантировать, что GitHub Pages не кэширует файл
+                const response = await fetch(`./alerts.json?t=${Date.now()}`);
+                if (!response.ok) {
+                    throw new Error(`Ошибка загрузки данных: ${response.statusText}`);
+                }
+                const data = await response.json();
+                
+                processData(data);
+                updateStatus('Дані успішно завантажено', true);
+            } catch (error) {
+                console.error('Помилка завантаження alerts.json:', error);
+                updateStatus(`Помилка завантаження: ${error.message}`, false);
+            }
+        }
+
+        // ОБРАБОТКА ПОЛУЧЕННЫХ ДАННЫХ
+        function processData(data) {
+            activeAlerts = data.active_alerts || [];
+            
+            // Сортировка по времени (самые новые сверху)
+            activeAlerts.sort((a, b) => b.timestamp - a.timestamp);
+
+            updateMapMarkers();
+            updateAllDisplays(data.last_update);
+        }
+        
+        // ОБНОВЛЕНИЕ МАРКЕРОВ И ЛИНИЙ НА КАРТЕ
+        function updateMapMarkers() {
+            mapLayers.clearLayers(); 
+
+            activeAlerts.forEach(alert => {
+                const markerClass = 'marker-' + alert.type;
+                const iconContent = TYPE_ICONS[alert.type] || '❓';
+                
+                const icon = L.divIcon({
+                    html: `<div class="custom-marker ${markerClass}">${iconContent}</div>`,
+                    className: 'custom-marker-icon',
+                    iconSize: [35, 35],
+                    iconAnchor: [17, 17]
+                });
+
+                // Точка тревоги
+                const coords = Array.isArray(alert.coords) ? alert.coords : alert.coords.split(',').map(c => parseFloat(c.trim()));
+                
+                if (coords.length === 2) {
+                    const marker = L.marker(coords, { icon: icon }).addTo(mapLayers);
+                    
+                    marker.bindPopup(`
+                        <div style="color: black; min-width: 250px;">
+                            <strong style="color: #e74c3c; font-size: 1.1em;">
+                                ${getTypeName(alert.type)}
+                            </strong><br>
+                            <b>Локація:</b> ${alert.location.replace(/_/g, ' ')}<br>
+                            <b>Час:</b> ${formatTime(alert.timestamp)}<br>
+                            <b>Повідомлення:</b> ${alert.message}
+                        </div>
+                    `);
+                    
+                    // Если это Shahed и есть маршрут, рисуем линию
+                    if (alert.type === 'shahed' && alert.direction_line && Array.isArray(alert.direction_line)) {
+                        L.polyline(alert.direction_line, {
+                            color: '#3498db', 
+                            className: 'shahed-line',
+                            weight: 3,
+                            opacity: 0.8
+                        }).addTo(mapLayers);
+                    }
+                }
+            });
+        }
+
         // ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
-        function updateAllDisplays() {
+        function updateAllDisplays(lastUpdateTimestamp) {
             updateStats();
             updateAlertsList();
-            updateLastUpdateTime();
+            updateLastUpdateTime(lastUpdateTimestamp);
         }
 
         function updateStats() {
-            const now = Date.now();
-            const activeAlerts = alerts.filter(a => (now - a.timestamp) < 30 * 60 * 1000);
-            
-            document.getElementById('totalAlerts').textContent = alerts.length;
             document.getElementById('activeAlerts').textContent = activeAlerts.length;
-            document.getElementById('rocketAlerts').textContent = alerts.filter(a => a.type === 'rocket').length;
-            document.getElementById('droneAlerts').textContent = alerts.filter(a => a.type === 'drone').length;
-            document.getElementById('alertsCount').textContent = alerts.length;
+            document.getElementById('alertsCount').textContent = activeAlerts.length;
+            
+            // Статистика для нових типів
+            const counts = activeAlerts.reduce((acc, alert) => {
+                acc[alert.type] = (acc[alert.type] || 0) + 1;
+                return acc;
+            }, {});
+
+            document.getElementById('s300Alerts').textContent = counts['s300'] || 0;
+            document.getElementById('kabAlerts').textContent = counts['kab'] || 0;
+            document.getElementById('shahedAlerts').textContent = counts['shahed'] || 0;
+            document.getElementById('iskanderAlerts').textContent = counts['iskander'] || 0;
+            document.getElementById('artilleryAlerts').textContent = counts['artillery'] || 0;
+            
         }
 
         function updateAlertsList() {
             const alertsList = document.getElementById('alertsList');
             
-            if (alerts.length === 0) {
-                alertsList.innerHTML = '<div class="loading">Немає активних тривог. Використовуйте бота для додавання.</div>';
+            if (activeAlerts.length === 0) {
+                alertsList.innerHTML = '<div class="loading">Немає активних загроз.</div>';
                 return;
             }
             
             alertsList.innerHTML = '';
-            alerts.slice(0, 15).forEach(alert => {
+            activeAlerts.slice(0, 15).forEach(alert => {
                 const alertElement = document.createElement('div');
-                alertElement.className = `alert-item ${alert.type} bot`;
+                alertElement.className = `alert-item ${alert.type}`;
                 alertElement.innerHTML = `
                     <div class="alert-header">
                         <span class="alert-type">${getTypeName(alert.type)}</span>
-                        <span class="alert-source bot">🤖 Бот</span>
+                        <span class="alert-time">${formatTime(alert.timestamp)}</span>
                     </div>
-                    <div class="alert-location">${alert.location}</div>
-                    <div class="alert-time">${alert.time}</div>
-                    <div class="alert-message">${alert.message}</div>
+                    <div class="alert-message">
+                        <b>${alert.location.replace(/_/g, ' ')}:</b> ${alert.message}
+                    </div>
                 `;
                 alertsList.appendChild(alertElement);
             });
         }
 
-        function updateLastUpdateTime() {
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('uk-UA');
+        function updateLastUpdateTime(timestampString) {
+            if (timestampString) {
+                document.getElementById('lastUpdate').textContent = timestampString;
+            } else {
+                 document.getElementById('lastUpdate').textContent = formatTime(Date.now());
+            }
         }
 
         function updateStatus(message, isOnline) {
@@ -483,32 +352,11 @@
             statusElement.className = isOnline ? 'status-online' : 'status-offline';
         }
 
-        // ИНИЦИАЛИЗАЦИЯ КАРТЫ
-        function initMap() {
-            if (map) return;
-            
-            map = L.map('alertMap').setView([49.9935, 36.2304], 11);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-        }
-
-        // ЗАПУСК СИСТЕМЫ
-        function startBotMonitoring() {
-            if (botUpdatesInterval) {
-                clearInterval(botUpdatesInterval);
-            }
-            
-            getBotUpdates();
-            botUpdatesInterval = setInterval(getBotUpdates, 5000); // Проверка каждые 5 секунд
-        }
-
         // АВТОЗАПУСК
         document.addEventListener('DOMContentLoaded', function() {
             initMap();
-            testBotConnection();
-            startBotMonitoring();
-            updateStatus('Система активна. Очікування команд з бота...', true);
+            loadAlerts(); // Первый запуск
+            setInterval(loadAlerts, UPDATE_INTERVAL); // Регулярное обновление
         });
     </script>
 </body>
